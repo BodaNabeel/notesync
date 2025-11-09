@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "pnpm --filter next-app dev",
-    "dev:socket": "pnpm --filter socket-server start",
+    "dev:socket": "pnpm --filter socket-server dev",
     "build": "pnpm --filter next-app build",
     "start": "pnpm --filter next-app start",
     "lint": "eslint"

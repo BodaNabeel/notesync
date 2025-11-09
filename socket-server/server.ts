@@ -9,8 +9,17 @@ io.on("connection", (socket) => {
     setInterval(() => {
         io.emit("message", "Hello you're now connected");
     }, 2000);
+
+    socket.on("msg_update", (msg) => {
+        console.log("Message: ", msg)
+        io.emit("new_msg", msg)
+    })
+    socket.on("disconnect", () => {
+        console.log("user with id: ", socket.id, " had disconnected")
+    })
 });
 
-httpServer.listen(3000, () => {
-    console.log("Server running on http://localhost:3000");
+
+httpServer.listen(4000, () => {
+    console.log("Server running on http://localhost:4000");
 });
