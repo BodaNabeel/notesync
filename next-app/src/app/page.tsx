@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useState, ChangeEvent, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -29,6 +30,7 @@ export default function Home() {
 
   return (
     <div className="max-w-5xl mx-auto mt-20">
+      <Button>Hello</Button>
       <textarea
         value={content}
         onChange={handleContentChange}
