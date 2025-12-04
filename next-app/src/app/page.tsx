@@ -28,14 +28,5 @@ export default function Home() {
     };
   }, []);
 
-  return (
-    <div className="max-w-5xl mx-auto mt-20">
-      <Button>Hello</Button>
-      <textarea
-        value={content}
-        onChange={handleContentChange}
-        className="w-full h-80 p-2 border"
-      />{" "}
-    </div>
-  );
+  return <div></div>;
 }
