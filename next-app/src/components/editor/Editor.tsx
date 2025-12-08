@@ -13,8 +13,7 @@ export default function Editor() {
       onClick={() => {
         editor.focus();
       }}
-      className="max-w-6xl mx-auto border h-[calc(100vh-100px)]
- "
+      className="max-w-5xl mx-auto min-h-[calc(100vh-100px)] pb-80 "
     >
       <BlockNoteView
         data-theming-css-variables-demo
