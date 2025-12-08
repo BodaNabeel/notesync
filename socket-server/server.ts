@@ -1,21 +1,14 @@
-import { createServer } from "http";
-import { Server } from "socket.io";
+import { Server } from "@hocuspocus/server";
 
-const httpServer = createServer();
-const io = new Server(httpServer);
+const server = new Server({
+    name: "hocuspocus-fra1-01",
+    port: 5000,
+    timeout: 30000,
+    debounce: 5000,
+    maxDebounce: 30000,
+    quiet: true,
 
-io.on("connection", (socket) => {
-    console.log("user connected with id: ", socket.id)
-    socket.on("msg_update", (msg) => {
-        console.log("Message: ", msg)
-        io.emit("new_msg", msg)
-    })
-    socket.on("disconnect", () => {
-        console.log("user with id: ", socket.id, " had disconnected")
-    })
+    onChange
 });
 
-
-httpServer.listen(4000, () => {
-    console.log("Server running on http://localhost:4000");
-});
+server.listen();
