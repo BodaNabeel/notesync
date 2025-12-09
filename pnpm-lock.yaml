@@ -12,6 +12,31 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  hono-server:
+    dependencies:
+      '@hocuspocus/server':
+        specifier: ^3.4.0
+        version: 3.4.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
+      '@hono/node-server':
+        specifier: ^1.19.6
+        version: 1.19.7(hono@4.10.8)
+      '@hono/node-ws':
+        specifier: ^1.2.0
+        version: 1.2.0(@hono/node-server@1.19.7(hono@4.10.8))(hono@4.10.8)
+      hono:
+        specifier: ^4.10.8
+        version: 4.10.8
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.17
+        version: 20.19.24
+      tsx:
+        specifier: ^4.7.1
+        version: 4.20.6
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
   next-app:
     dependencies:
       '@blocknote/core':
@@ -90,9 +115,15 @@ importers:
 
   socket-server:
     dependencies:
+      '@hocuspocus/extension-database':
+        specifier: ^3.4.0
+        version: 3.4.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
       '@hocuspocus/server':
         specifier: ^3.4.0
         version: 3.4.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
+      '@hono/node-ws':
+        specifier: ^1.2.0
+        version: 1.2.0(@hono/node-server@1.19.7(hono@4.10.8))(hono@4.10.8)
       express:
         specifier: ^4.21.2
         version: 4.21.2
@@ -454,6 +485,11 @@ packages:
   '@hocuspocus/common@3.4.0':
     resolution: {integrity: sha512-vN0kE/mGTjuwchq16naq+nEjFDmeSLNCkDSAB7DKvpZnuG4KQi5oC42VFdKbq/baQTbDMSe82rI7f9riOR8idQ==}
 
+  '@hocuspocus/extension-database@3.4.0':
+    resolution: {integrity: sha512-YCTOu2SsWI17t7pp0jcRBVdcy7mYBCk/TBycj5jFuAs+JDd7qvA2Y719mm1xgxmKiXJMyvomnSXhTVgMfflmNA==}
+    peerDependencies:
+      yjs: ^13.6.8
+
   '@hocuspocus/provider@3.4.0':
     resolution: {integrity: sha512-SXiHk4I2n1BqX1KuXgNDHpgMXseWbCIsaXT/lGaFq+qCF5F92cAmIg4mUPUQ39L1ugKM6Hm7tX33X+Jsk7466g==}
     peerDependencies:
@@ -465,6 +501,19 @@ packages:
     peerDependencies:
       y-protocols: ^1.0.6
       yjs: ^13.6.8
+
+  '@hono/node-server@1.19.7':
+    resolution: {integrity: sha512-vUcD0uauS7EU2caukW8z5lJKtoGMokxNbJtBiwHgpqxEXokaHCBkQUmCHhjFB1VUTWdqj25QoMkMKzgjq+uhrw==}
+    engines: {node: '>=18.14.1'}
+    peerDependencies:
+      hono: ^4
+
+  '@hono/node-ws@1.2.0':
+    resolution: {integrity: sha512-OBPQ8OSHBw29mj00wT/xGYtB6HY54j0fNSdVZ7gZM3TUeq0So11GXaWtFf1xWxQNfumKIsj0wRuLKWfVsO5GgQ==}
+    engines: {node: '>=18.14.1'}
+    peerDependencies:
+      '@hono/node-server': ^1.11.1
+      hono: ^4.6.0
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -2462,6 +2511,10 @@ packages:
     resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
     engines: {node: '>=12.0.0'}
 
+  hono@4.10.8:
+    resolution: {integrity: sha512-DDT0A0r6wzhe8zCGoYOmMeuGu3dyTAE40HHjwUsWFTEy5WxK1x2WDSsBPlEXgPbRIFY6miDualuUDbasPogIww==}
+    engines: {node: '>=16.9.0'}
+
   html-void-elements@3.0.0:
     resolution: {integrity: sha512-bEqo66MRXsUGxWHV5IP0PUiAWwoEjba4VCzg0LjFJBpchPaTfyfCKTG6bc5F8ucKec3q5y6qOdGyYTSBEvhCrg==}
 
@@ -4328,6 +4381,15 @@ snapshots:
     dependencies:
       lib0: 0.2.114
 
+  '@hocuspocus/extension-database@3.4.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)':
+    dependencies:
+      '@hocuspocus/server': 3.4.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
+      yjs: 13.6.27
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+      - y-protocols
+
   '@hocuspocus/provider@3.4.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)':
     dependencies:
       '@hocuspocus/common': 3.4.0
@@ -4350,6 +4412,19 @@ snapshots:
       ws: 8.17.1
       y-protocols: 1.0.6(yjs@13.6.27)
       yjs: 13.6.27
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  '@hono/node-server@1.19.7(hono@4.10.8)':
+    dependencies:
+      hono: 4.10.8
+
+  '@hono/node-ws@1.2.0(@hono/node-server@1.19.7(hono@4.10.8))(hono@4.10.8)':
+    dependencies:
+      '@hono/node-server': 1.19.7(hono@4.10.8)
+      hono: 4.10.8
+      ws: 8.17.1
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -6572,6 +6647,8 @@ snapshots:
 
   highlight.js@11.11.1:
     optional: true
+
+  hono@4.10.8: {}
 
   html-void-elements@3.0.0: {}
 
