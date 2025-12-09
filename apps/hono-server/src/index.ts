@@ -1,13 +1,25 @@
-import { Hono } from "hono";
 import { Hocuspocus } from "@hocuspocus/server";
-
-// Node.js specific
+import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
+import { usersTable } from "@note/db";
+import { db } from "./db.ts";
 
 // Configure Hocuspocus
 const hocuspocus = new Hocuspocus({
-  // …
+  debounce: 5000,
+  async onConnect({ request, documentName }) {
+  },
+  async onStoreDocument({ documentName }) {
+    console.log("change recorded now update db")
+    try {
+
+      await db.insert(usersTable).values({ id: 256, name: "nabeel", age: 5, email: "nabeel@gmail.com" })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
 });
 
 // Setup Hono server
@@ -35,6 +47,8 @@ const server = serve({
     instance: hocuspocus,
     configuration: hocuspocus.configuration,
     port: info.port
+
+
   })
 });
 

@@ -10,11 +10,14 @@
     "@hocuspocus/server": "^3.4.0",
     "@hono/node-server": "^1.19.6",
     "@hono/node-ws": "^1.2.0",
+    "@note/db": "workspace:*",
+    "dotenv": "^17.2.3",
     "hono": "^4.10.8"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
+    "@types/node": "^20.19.24",
+    "ts-node": "^10.9.2",
     "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.3"
   }
 }

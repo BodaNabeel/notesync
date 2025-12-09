@@ -58,7 +58,7 @@ export default function Editor() {
 
   const doc = new Y.Doc();
   const provider = new HocuspocusProvider({
-    url: "ws://localhost:5000/hocuspocus",
+    url: process.env.NEXT_PUBLIC_HONO_SERVER_URL!,
     name: "example-document",
     document: doc,
   });

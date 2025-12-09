@@ -1,10 +1,12 @@
 {
-  "name": "note-collab-app",
+  "name": "note",
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "pnpm --filter next-app dev",
-    "dev:socket": "pnpm --filter socket-server dev",
+    "db:generate": "pnpm --filter @note/db exec drizzle-kit generate",
+    "db:migrate": "pnpm --filter @note/db exec drizzle-kit migrate",
+    "db:push": "pnpm --filter @note/db exec drizzle-kit push",
+    "dev:app": "pnpm --filter next-app dev",
     "dev:hono": "pnpm --filter hono-server dev",
     "build": "pnpm --filter next-app build",
     "start": "pnpm --filter next-app start",
@@ -12,5 +14,9 @@
   },
   "devDependencies": {
     "typescript": "^5"
-  }
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }

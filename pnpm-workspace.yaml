@@ -1,3 +1,4 @@
 packages:
-  - "next-app"
-  - "hono-server"
+  - "apps/*"
+  - "packages/*"
+linkWorkspacePackages: "true"
