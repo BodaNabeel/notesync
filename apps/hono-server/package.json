@@ -1,0 +1,25 @@
+{
+  "name": "hono-server",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@hocuspocus/extension-database": "3.4.1",
+    "@hocuspocus/server": "^3.4.1",
+    "@hono/node-server": "^1.19.6",
+    "@hono/node-ws": "^1.2.0",
+    "@note/db": "workspace:*",
+    "dotenv": "^17.2.3",
+    "hono": "^4.10.8",
+    "yjs": "^13.6.27"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.24",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.9.3"
+  }
+}

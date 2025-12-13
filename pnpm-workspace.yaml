@@ -1,3 +1,4 @@
 packages:
-  - "next-app"
-  - "socket-server"
+  - "apps/*"
+  - "packages/*"
+linkWorkspacePackages: "true"

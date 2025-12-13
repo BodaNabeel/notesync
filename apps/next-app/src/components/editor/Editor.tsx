@@ -1,17 +1,14 @@
 "use client";
 import * as Y from "yjs";
-import { WebrtcProvider } from "y-webrtc";
 
+import * as DropdownMenu from "@/components/ui/dropdown-menu";
 import "@blocknote/core/fonts/inter.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
-import * as DropdownMenu from "@/components/ui/dropdown-menu";
-import { useEffect, useRef } from "react";
-import { io, Socket } from "socket.io-client";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 
-export default function Editor() {
+export default function Editor({ documentName }: { documentName: string }) {
   // editor setup:
 
   const NAMES = [
@@ -61,14 +58,15 @@ export default function Editor() {
 
   const doc = new Y.Doc();
   const provider = new HocuspocusProvider({
-    url: "ws://localhost:5000",
-    name: "example-document",
+    url: process.env.NEXT_PUBLIC_HONO_SERVER_URL!,
+    name: documentName,
     document: doc,
   });
+  // eslint-disable-next-line react-hooks/purity
   const randomIndex = Math.floor(Math.random() * NAMES.length);
   const editor = useCreateBlockNote({
     collaboration: {
-      fragment: doc.getXmlFragment("document-store"),
+      fragment: doc.getXmlFragment(documentName),
       user: {
         name: NAMES[randomIndex],
         color: COLORS[randomIndex],
@@ -77,25 +75,6 @@ export default function Editor() {
       provider,
     },
   });
-
-  // socket.io setup
-  const socketRef = useRef<Socket | null>(null);
-
-  // useEffect(() => {
-  //   console.log(process.env.NEXT_PUBLIC_SOCKET_IO_URL);
-  //   socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_IO_URL, {
-  //     transports: ["websocket"],
-  //   });
-  //   socketRef.current.on("connect", () => {
-  //     console.log("Connected to socket.io");
-  //   });
-  //   socketRef.current.on("socket_update_document", (update) => {
-  //     console.log("update received as:", update);
-  //   });
-  //   return () => {
-  //     socketRef?.current?.disconnect();
-  //   };
-  // }, []);
 
   return (
     <div
