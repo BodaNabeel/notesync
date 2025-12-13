@@ -8,7 +8,7 @@ import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 
-export default function Editor() {
+export default function Editor({ documentName }: { documentName: string }) {
   // editor setup:
 
   const NAMES = [
@@ -59,14 +59,14 @@ export default function Editor() {
   const doc = new Y.Doc();
   const provider = new HocuspocusProvider({
     url: process.env.NEXT_PUBLIC_HONO_SERVER_URL!,
-    name: "example-document",
+    name: documentName,
     document: doc,
   });
   // eslint-disable-next-line react-hooks/purity
   const randomIndex = Math.floor(Math.random() * NAMES.length);
   const editor = useCreateBlockNote({
     collaboration: {
-      fragment: doc.getXmlFragment("document-store"),
+      fragment: doc.getXmlFragment(documentName),
       user: {
         name: NAMES[randomIndex],
         color: COLORS[randomIndex],

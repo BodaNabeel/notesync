@@ -14,9 +14,12 @@ importers:
 
   apps/hono-server:
     dependencies:
+      '@hocuspocus/extension-database':
+        specifier: 3.4.1
+        version: 3.4.1(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
       '@hocuspocus/server':
-        specifier: ^3.4.0
-        version: 3.4.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
+        specifier: ^3.4.1
+        version: 3.4.1(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
       '@hono/node-server':
         specifier: ^1.19.6
         version: 1.19.7(hono@4.10.8)
@@ -32,6 +35,9 @@ importers:
       hono:
         specifier: ^4.10.8
         version: 4.10.8
+      yjs:
+        specifier: ^13.6.27
+        version: 13.6.27
     devDependencies:
       '@types/node':
         specifier: ^20.19.24
@@ -793,14 +799,22 @@ packages:
   '@hocuspocus/common@3.4.0':
     resolution: {integrity: sha512-vN0kE/mGTjuwchq16naq+nEjFDmeSLNCkDSAB7DKvpZnuG4KQi5oC42VFdKbq/baQTbDMSe82rI7f9riOR8idQ==}
 
+  '@hocuspocus/common@3.4.1':
+    resolution: {integrity: sha512-29Dpa3nslBvM4dksIoskovYt/aecJomEeWE5Wmzr+lNFJje15P/L/47WcogguRd/IqYIu2auNTyKlouvSRrDAQ==}
+
+  '@hocuspocus/extension-database@3.4.1':
+    resolution: {integrity: sha512-jkEl5iaacf2nXP2TUqa1KEU1PuS2tjFW+4MLhDn0U2yfqfQsg+rOqCi+mNXHVv6rfKnAGRTVWzi2LXtyyby5zQ==}
+    peerDependencies:
+      yjs: ^13.6.8
+
   '@hocuspocus/provider@3.4.0':
     resolution: {integrity: sha512-SXiHk4I2n1BqX1KuXgNDHpgMXseWbCIsaXT/lGaFq+qCF5F92cAmIg4mUPUQ39L1ugKM6Hm7tX33X+Jsk7466g==}
     peerDependencies:
       y-protocols: ^1.0.6
       yjs: ^13.6.8
 
-  '@hocuspocus/server@3.4.0':
-    resolution: {integrity: sha512-ludVWFkos7FgOmdGxn5UxhV7H0K4mMly8mq+wXAK8fOuW+9vrjQDfd23tOOcQPbZ0aGyPC0FMmEZ1GsFpVArCg==}
+  '@hocuspocus/server@3.4.1':
+    resolution: {integrity: sha512-VgHmu71CFwyCYOlkLovAqaFrUKGq+OSsIw13PaMLMUrnLT3EdMqFzfkw9b82Qbf23WoN3yvMCPklNjnjg5/Brg==}
     peerDependencies:
       y-protocols: ^1.0.6
       yjs: ^13.6.8
@@ -4849,6 +4863,19 @@ snapshots:
     dependencies:
       lib0: 0.2.114
 
+  '@hocuspocus/common@3.4.1':
+    dependencies:
+      lib0: 0.2.114
+
+  '@hocuspocus/extension-database@3.4.1(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)':
+    dependencies:
+      '@hocuspocus/server': 3.4.1(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
+      yjs: 13.6.27
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+      - y-protocols
+
   '@hocuspocus/provider@3.4.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)':
     dependencies:
       '@hocuspocus/common': 3.4.0
@@ -4861,9 +4888,9 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@hocuspocus/server@3.4.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)':
+  '@hocuspocus/server@3.4.1(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)':
     dependencies:
-      '@hocuspocus/common': 3.4.0
+      '@hocuspocus/common': 3.4.1
       async-lock: 1.4.1
       async-mutex: 0.5.0
       kleur: 4.1.5

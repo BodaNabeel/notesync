@@ -1,16 +1,42 @@
-export declare const usersTable: import("drizzle-orm/pg-core").PgTableWithColumns<{
-    name: "users_table";
+export declare const bytea: {
+    (): import("drizzle-orm/pg-core").PgCustomColumnBuilder<{
+        name: "";
+        dataType: "custom";
+        columnType: "PgCustomColumn";
+        data: Uint8Array<ArrayBufferLike>;
+        driverParam: Buffer<ArrayBufferLike>;
+        enumValues: undefined;
+    }>;
+    <TConfig extends Record<string, any>>(fieldConfig?: TConfig | undefined): import("drizzle-orm/pg-core").PgCustomColumnBuilder<{
+        name: "";
+        dataType: "custom";
+        columnType: "PgCustomColumn";
+        data: Uint8Array<ArrayBufferLike>;
+        driverParam: Buffer<ArrayBufferLike>;
+        enumValues: undefined;
+    }>;
+    <TName extends string>(dbName: TName, fieldConfig?: unknown): import("drizzle-orm/pg-core").PgCustomColumnBuilder<{
+        name: TName;
+        dataType: "custom";
+        columnType: "PgCustomColumn";
+        data: Uint8Array<ArrayBufferLike>;
+        driverParam: Buffer<ArrayBufferLike>;
+        enumValues: undefined;
+    }>;
+};
+export declare const documentTable: import("drizzle-orm/pg-core").PgTableWithColumns<{
+    name: "document_table";
     schema: undefined;
     columns: {
         id: import("drizzle-orm/pg-core").PgColumn<{
             name: "id";
-            tableName: "users_table";
-            dataType: "number";
-            columnType: "PgSerial";
-            data: number;
-            driverParam: number;
+            tableName: "document_table";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
             notNull: true;
-            hasDefault: true;
+            hasDefault: false;
             isPrimaryKey: true;
             isAutoincrement: false;
             hasRuntimeDefault: false;
@@ -19,32 +45,15 @@ export declare const usersTable: import("drizzle-orm/pg-core").PgTableWithColumn
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        name: import("drizzle-orm/pg-core").PgColumn<{
-            name: "name";
-            tableName: "users_table";
-            dataType: "string";
-            columnType: "PgText";
-            data: string;
+        createdAt: import("drizzle-orm/pg-core").PgColumn<{
+            name: "createdAt";
+            tableName: "document_table";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
             driverParam: string;
             notNull: true;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: [string, ...string[]];
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-        age: import("drizzle-orm/pg-core").PgColumn<{
-            name: "age";
-            tableName: "users_table";
-            dataType: "number";
-            columnType: "PgInteger";
-            data: number;
-            driverParam: string | number;
-            notNull: true;
-            hasDefault: false;
+            hasDefault: true;
             isPrimaryKey: false;
             isAutoincrement: false;
             hasRuntimeDefault: false;
@@ -53,40 +62,16 @@ export declare const usersTable: import("drizzle-orm/pg-core").PgTableWithColumn
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        email: import("drizzle-orm/pg-core").PgColumn<{
-            name: "email";
-            tableName: "users_table";
-            dataType: "string";
-            columnType: "PgText";
-            data: string;
+        lastModified: import("drizzle-orm/pg-core").PgColumn<{
+            name: "lastModified";
+            tableName: "document_table";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
             driverParam: string;
             notNull: true;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: [string, ...string[]];
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-    };
-    dialect: "pg";
-}>;
-export declare const postsTable: import("drizzle-orm/pg-core").PgTableWithColumns<{
-    name: "posts_table";
-    schema: undefined;
-    columns: {
-        id: import("drizzle-orm/pg-core").PgColumn<{
-            name: "id";
-            tableName: "posts_table";
-            dataType: "number";
-            columnType: "PgSerial";
-            data: number;
-            driverParam: number;
-            notNull: true;
             hasDefault: true;
-            isPrimaryKey: true;
+            isPrimaryKey: false;
             isAutoincrement: false;
             hasRuntimeDefault: false;
             enumValues: undefined;
@@ -96,13 +81,13 @@ export declare const postsTable: import("drizzle-orm/pg-core").PgTableWithColumn
         }, {}, {}>;
         title: import("drizzle-orm/pg-core").PgColumn<{
             name: "title";
-            tableName: "posts_table";
+            tableName: "document_table";
             dataType: "string";
             columnType: "PgText";
             data: string;
             driverParam: string;
             notNull: true;
-            hasDefault: false;
+            hasDefault: true;
             isPrimaryKey: false;
             isAutoincrement: false;
             hasRuntimeDefault: false;
@@ -111,15 +96,34 @@ export declare const postsTable: import("drizzle-orm/pg-core").PgTableWithColumn
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        content: import("drizzle-orm/pg-core").PgColumn<{
-            name: "content";
-            tableName: "posts_table";
-            dataType: "string";
-            columnType: "PgText";
-            data: string;
-            driverParam: string;
+        document: import("drizzle-orm/pg-core").PgColumn<{
+            name: "document";
+            tableName: "document_table";
+            dataType: "custom";
+            columnType: "PgCustomColumn";
+            data: Uint8Array<ArrayBufferLike>;
+            driverParam: Buffer<ArrayBufferLike>;
             notNull: true;
             hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            pgColumnBuilderBrand: "PgCustomColumnBuilderBrand";
+        }>;
+        documentAccessType: import("drizzle-orm/pg-core").PgColumn<{
+            name: "document_access_type";
+            tableName: "document_table";
+            dataType: "string";
+            columnType: "PgText";
+            data: "private" | "public";
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
             isPrimaryKey: false;
             isAutoincrement: false;
             hasRuntimeDefault: false;
@@ -127,62 +131,11 @@ export declare const postsTable: import("drizzle-orm/pg-core").PgTableWithColumn
             baseColumn: never;
             identity: undefined;
             generated: undefined;
-        }, {}, {}>;
-        userId: import("drizzle-orm/pg-core").PgColumn<{
-            name: "user_id";
-            tableName: "posts_table";
-            dataType: "number";
-            columnType: "PgInteger";
-            data: number;
-            driverParam: string | number;
-            notNull: true;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: undefined;
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-        createdAt: import("drizzle-orm/pg-core").PgColumn<{
-            name: "created_at";
-            tableName: "posts_table";
-            dataType: "date";
-            columnType: "PgTimestamp";
-            data: Date;
-            driverParam: string;
-            notNull: true;
-            hasDefault: true;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: undefined;
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-        updatedAt: import("drizzle-orm/pg-core").PgColumn<{
-            name: "updated_at";
-            tableName: "posts_table";
-            dataType: "date";
-            columnType: "PgTimestamp";
-            data: Date;
-            driverParam: string;
-            notNull: true;
-            hasDefault: true;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: undefined;
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
+        }, {}, {
+            $type: "private" | "public";
+        }>;
     };
     dialect: "pg";
 }>;
-export type InsertUser = typeof usersTable.$inferInsert;
-export type SelectUser = typeof usersTable.$inferSelect;
-export type InsertPost = typeof postsTable.$inferInsert;
-export type SelectPost = typeof postsTable.$inferSelect;
+export type InsertDocument = typeof documentTable.$inferInsert;
+export type SelectDocument = typeof documentTable.$inferSelect;

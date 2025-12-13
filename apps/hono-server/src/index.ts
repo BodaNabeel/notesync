@@ -1,25 +1,57 @@
+import { Database } from "@hocuspocus/extension-database";
 import { Hocuspocus } from "@hocuspocus/server";
-import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
-import { usersTable } from "@note/db";
+import { documentTable, eq } from "@note/db";
+import { Hono } from "hono";
 import { db } from "./db.ts";
 
 // Configure Hocuspocus
 const hocuspocus = new Hocuspocus({
   debounce: 5000,
-  async onConnect({ request, documentName }) {
-  },
-  async onStoreDocument({ documentName }) {
-    console.log("change recorded now update db")
-    try {
+  extensions: [
+    new Database({
+      async fetch({ documentName }) {
+        try {
+          const result = await db
+            .select()
+            .from(documentTable)
+            .where(eq(documentTable.id, documentName))
+            .limit(1);
 
-      await db.insert(usersTable).values({ id: 256, name: "nabeel", age: 5, email: "nabeel@gmail.com" })
-    } catch (e) {
-      console.log(e)
-    }
-  }
+          if (result.length === 0) {
+            return null
+          }
+          return result[0].document
 
+        } catch (error) {
+          console.log(`error occurred while fetching document: ${documentName}`, documentName)
+          return null
+        }
+
+      },
+
+      async store({ documentName, state }) {
+        try {
+          await db
+            .insert(documentTable)
+            .values({
+              id: documentName,
+              document: state,
+            }).onConflictDoUpdate({
+              target: documentTable.id,
+              set: {
+                document: state,
+                lastModified: new Date(),
+              }
+            })
+        } catch (error) {
+          console.log(`error occurred while inserting document with documentName: ${documentName}`, error)
+        }
+
+      }
+    })
+  ],
 });
 
 // Setup Hono server
@@ -47,8 +79,6 @@ const server = serve({
     instance: hocuspocus,
     configuration: hocuspocus.configuration,
     port: info.port
-
-
   })
 });
 

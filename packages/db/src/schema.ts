@@ -1,27 +1,34 @@
-import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { customType, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-export const usersTable = pgTable('users_table', {
-    id: serial('id').primaryKey(),
-    name: text('name').notNull(),
-    age: integer('age').notNull(),
-    email: text('email').notNull().unique(),
+
+export const bytea = customType<{
+    data: Uint8Array;
+    driverData: Buffer;
+}>({
+    dataType() {
+        return "bytea";
+    },
+
+    toDriver: (value) => {
+        return Buffer.from(value);
+    },
+
+    fromDriver: (value) => {
+        return new Uint8Array(value);
+    },
 });
 
-export const postsTable = pgTable('posts_table', {
-    id: serial('id').primaryKey(),
-    title: text('title').notNull(),
-    content: text('content').notNull(),
-    userId: integer('user_id')
+export const documentTable = pgTable("document_table", {
+    id: uuid("id").primaryKey().notNull(),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
+    lastModified: timestamp("lastModified").notNull().defaultNow(),
+    title: text("title").notNull().default("Untitled Doc"),
+    document: bytea("document").notNull(),
+    documentAccessType: text("document_access_type")
+        .$type<"private" | "public">()
         .notNull()
-        .references(() => usersTable.id, { onDelete: 'cascade' }),
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at')
-        .notNull()
-        .$onUpdate(() => new Date()),
+        .default("private"),
 });
 
-export type InsertUser = typeof usersTable.$inferInsert;
-export type SelectUser = typeof usersTable.$inferSelect;
-
-export type InsertPost = typeof postsTable.$inferInsert;
-export type SelectPost = typeof postsTable.$inferSelect;
+export type InswertDocument = typeof documentTable.$inferInsert;
+export type SelectDocument = typeof documentTable.$inferSelect;
