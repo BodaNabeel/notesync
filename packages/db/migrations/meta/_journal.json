@@ -15,6 +15,13 @@
       "when": 1765645652047,
       "tag": "0001_serious_elektra",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765749722834,
+      "tag": "0002_heavy_riptide",
+      "breakpoints": true
     }
   ]
 }
