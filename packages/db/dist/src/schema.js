@@ -21,6 +21,7 @@ export const documentTable = pgTable("document_table", {
         .$type()
         .notNull()
         .default("private"),
+    ownerId: text("owner_id").references(() => user.id, { onDelete: 'cascade' }).notNull()
 });
 export const user = pgTable("user", {
     id: text("id").primaryKey(),
