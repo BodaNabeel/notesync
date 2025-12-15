@@ -22,6 +22,20 @@
       "when": 1765749722834,
       "tag": "0002_heavy_riptide",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1765809110916,
+      "tag": "0003_curvy_inhumans",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1765812758371,
+      "tag": "0004_superb_vin_gonzales",
+      "breakpoints": true
     }
   ]
 }
