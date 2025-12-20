@@ -8,7 +8,7 @@ import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { Session } from "better-auth";
-import { useMemo, useEffect, useRef } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
 const NAMES = [
@@ -57,6 +57,8 @@ const COLORS = [
   "#bdc3c7",
 ];
 
+type EditorState = "loading" | "connected" | "error";
+
 export default function Editor({
   documentName,
   session,
@@ -64,18 +66,29 @@ export default function Editor({
   documentName: string;
   session: Session;
 }) {
-  const { token, loading, error } = useAuth();
+  const { token, loading: authLoading, error: authError } = useAuth();
+  const [editorState, setEditorState] = useState<EditorState>("loading");
 
   const doc = useMemo(() => new Y.Doc(), []);
 
   const provider = useMemo(() => {
     if (!token) return null;
-
     return new HocuspocusProvider({
       url: process.env.NEXT_PUBLIC_HONO_SERVER_URL!,
       name: documentName,
       document: doc,
-      token,
+      token: token,
+      onConnect() {
+        console.log("connected");
+        setEditorState("connected");
+      },
+      onAuthenticationFailed: () => {
+        console.error("Authentication Failed");
+        setEditorState("error");
+      },
+      onClose: ({}) => {
+        // Handle unexpected disconnections
+      },
     });
   }, [token, documentName, doc]);
 
@@ -85,21 +98,29 @@ export default function Editor({
     };
   }, [provider]);
 
-  const editor = useCreateBlockNote({
-    collaboration: {
-      provider,
-      fragment: doc.getXmlFragment(documentName),
-      user: {
-        name: "Foo",
-        color: "#ff0000",
-      },
-      showCursorLabels: "activity",
-    },
-  });
+  // Stable user info to avoid recreating editor
 
-  if (loading) return <p className="text-center">Loading......</p>;
-  if (error) return <div>Authentication failed</div>;
-  if (!provider) return <p>No provider</p>;
+  const editor = useCreateBlockNote(
+    {
+      collaboration: provider
+        ? {
+            provider,
+            fragment: doc.getXmlFragment("default"),
+            user: {
+              name: "FOo",
+              color: "red",
+            },
+            showCursorLabels: "activity",
+          }
+        : undefined,
+    },
+    [provider, doc]
+  );
+
+  const isLoading = authLoading || editorState === "loading";
+  if (isLoading) {
+    return <p>Loading....</p>;
+  }
 
   return (
     <div
