@@ -5,13 +5,14 @@ import { createNodeWebSocket } from "@hono/node-ws";
 import { documentTable, eq, and } from "@note/db";
 import { Hono } from "hono";
 import { db } from "./db.ts";
+import { verifyJWT } from "./auth.ts";
 
 // Configure Hocuspocus
 const hocuspocus = new Hocuspocus({
   debounce: 5000,
   extensions: [
     new Database({
-      async fetch({ documentName, context }) {
+      async fetch({ documentName }) {
         try {
           const result = await db
             .select()
@@ -32,6 +33,7 @@ const hocuspocus = new Hocuspocus({
       },
 
       async store({ documentName, state, context }) {
+        console.log("hi")
         const { isNewDocument, user } = context;
         const userId = user?.id;
         console.log(isNewDocument, userId)
@@ -61,24 +63,35 @@ const hocuspocus = new Hocuspocus({
     })
   ],
   async onAuthenticate({ documentName, token }) {
-    const result = await db
-      .select()
-      .from(documentTable)
-      .where(eq(documentTable.id, documentName))
-      .limit(1);
-    if (result.length === 0) {
-      return {
-        user: { id: token },
-        isNewDocument: true,
-      };
+
+    if (!token) {
+      throw new Error("Token is required to proceed further.")
     }
-    if (result[0].ownerId !== token) {
-      throw new Error("Not authorized")
+    const payload = await verifyJWT(token)
+    // console.log(payload)
+    if (payload) {
+      console.log("successfully authenticated")
+      return payload
     }
-    return {
-      user: { id: token },
-      isNewDocument: false,
-    };
+
+    // const result = await db
+    //   .select()
+    //   .from(documentTable)
+    //   .where(eq(documentTable.id, documentName))
+    //   .limit(1);
+    // if (result.length === 0) {
+    //   return {
+    //     user: { id: token },
+    //     isNewDocument: true,
+    //   };
+    // }
+    // if (result[0].ownerId !== token) {
+    //   throw new Error("Not authorized")
+    // }
+    // return {
+    //   user: { id: token },
+    //   isNewDocument: false,
+    // };
 
   },
 });

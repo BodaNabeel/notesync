@@ -18,6 +18,14 @@ export const bytea = customType<{
     },
 });
 
+export const jwks = pgTable("jwks", {
+    id: text("id").primaryKey(),
+    publicKey: text("publicKey").notNull(),
+    privateKey: text("privateKey").notNull(),
+    createdAt: timestamp("createdAt").notNull(),
+    expiresAt: timestamp("expiresAt"),
+});
+
 export const documentTable = pgTable("document_table", {
     id: uuid("id").primaryKey().notNull(),
     createdAt: timestamp("createdAt").notNull().defaultNow(),
@@ -126,3 +134,6 @@ export const accountRelations = relations(account, ({ one }) => ({
 export type InsertDocument = typeof documentTable.$inferInsert;
 export type SelectDocument = typeof documentTable.$inferSelect;
 export type userTable = typeof user.$inferSelect
+export type SelectJWKS = typeof jwks.$inferSelect;
+export type InsertJWKS = typeof jwks.$inferInsert;
+

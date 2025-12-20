@@ -22,37 +22,6 @@ export default async function Page({
     redirect(`/auth?documentName=${documentName}`, RedirectType.replace);
   }
 
-  // if (session) {
-  //   const result = await db
-  //     .select()
-  //     .from(documentTable)
-  //     .where(
-  //       and(
-  //         eq(documentTable.ownerId, session.session.userId),
-  //         eq(documentTable.id, documentName)
-  //       )
-  //     )
-  //     .limit(1);
-  //   if (result.length === 0) {
-  //     return <h1>You don&apos;t have access</h1>;
-  //   } else {
-  //     return (
-  //       <main className="flex h-screen">
-  //         {/* aside navbar */}
-  //         <aside className="w-[15%] bg-[#ece7e2]/10 h-full"></aside>
-
-  //         <section className="w-full">
-  //           {/* topl-bar */}
-  //           <div className="h-20 p-4 ">workspace / product / vision</div>
-
-  //           {/* editor */}
-  //           <Editor documentName={documentName} />
-  //         </section>
-  //       </main>
-  //     );
-  //   }
-  // }
-
   return (
     <main className="flex h-screen">
       <Link href={`/note/${randomUUID()}`}>New</Link>
@@ -60,7 +29,7 @@ export default async function Page({
       <aside className="w-[15%] bg-[#ece7e2]/10 h-full"></aside>
 
       <section className="w-full">
-        {/* topl-bar */}
+        {/* tool-bar */}
         <div className="h-20 p-4 ">workspace / product / vision</div>
 
         {/* editor */}

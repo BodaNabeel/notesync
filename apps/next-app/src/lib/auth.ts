@@ -1,13 +1,16 @@
 import { db } from "@/database/drizzle";
-import { account, session, user, verification } from "@note/db";
+import { account, jwks, session, user, verification } from "@note/db";
 import { betterAuth } from "better-auth";
+import { jwt } from "better-auth/plugins"
+import { jwtClient } from "better-auth/client/plugins"
+
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 export const auth = betterAuth({
     telemetry: { enabled: false },
     database: drizzleAdapter(db, {
         provider: "pg",
-        schema: { user, session, account, verification }
+        schema: { user, session, account, verification, jwks }
 
     }),
     socialProviders: {
@@ -15,5 +18,8 @@ export const auth = betterAuth({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!
         }
-    }
+    },
+    plugins: [
+        jwt()
+    ]
 });

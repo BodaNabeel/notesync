@@ -11,6 +11,13 @@ export const bytea = customType({
         return new Uint8Array(value);
     },
 });
+export const jwks = pgTable("jwks", {
+    id: text("id").primaryKey(),
+    publicKey: text("publicKey").notNull(),
+    privateKey: text("privateKey").notNull(),
+    createdAt: timestamp("createdAt").notNull(),
+    expiresAt: timestamp("expiresAt"),
+});
 export const documentTable = pgTable("document_table", {
     id: uuid("id").primaryKey().notNull(),
     createdAt: timestamp("createdAt").notNull().defaultNow(),
