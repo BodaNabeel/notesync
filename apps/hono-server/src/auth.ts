@@ -1,4 +1,3 @@
-// auth/jwt.ts
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import type { JWTPayload } from "jose";
 
