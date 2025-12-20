@@ -1,5 +1,7 @@
 import { Editor } from "@/components/editor/DynamicEditor";
+import { db } from "@/database/drizzle";
 import { auth } from "@/lib/auth";
+import { and, documentTable, eq } from "@note/db";
 import { randomUUID } from "crypto";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -15,11 +17,25 @@ export default async function Page({
   });
 
   const { documentName } = await params;
+  const [hasDocumentAccess] = await db
+    .select()
+    .from(documentTable)
+    .where(
+      and(
+        eq(documentTable.id, documentName),
+        eq(documentTable.ownerId, session?.user.id as string)
+      )
+    )
+    .limit(1);
 
   // checking for user authentication
   if (!session) {
     // notFound();
     redirect(`/auth?documentName=${documentName}`, RedirectType.replace);
+  }
+  if (!hasDocumentAccess) {
+    // TODO: Redirect to a path that will show proper error and the option to go to home
+    redirect("/not-found");
   }
 
   return (

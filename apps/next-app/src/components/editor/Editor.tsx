@@ -10,6 +10,7 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import { Session } from "better-auth";
 import { useMemo, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 const NAMES = [
   "John",
@@ -68,7 +69,7 @@ export default function Editor({
 }) {
   const { token, loading: authLoading, error: authError } = useAuth();
   const [editorState, setEditorState] = useState<EditorState>("loading");
-
+  const router = useRouter();
   const doc = useMemo(() => new Y.Doc(), []);
 
   const provider = useMemo(() => {
@@ -79,26 +80,22 @@ export default function Editor({
       document: doc,
       token: token,
       onConnect() {
-        console.log("connected");
         setEditorState("connected");
       },
       onAuthenticationFailed: () => {
-        console.error("Authentication Failed");
-        setEditorState("error");
+        router.push("/not-found");
       },
       onClose: ({}) => {
         // Handle unexpected disconnections
       },
     });
-  }, [token, documentName, doc]);
+  }, [token, documentName, doc, router]);
 
   useEffect(() => {
     return () => {
       provider?.destroy();
     };
   }, [provider]);
-
-  // Stable user info to avoid recreating editor
 
   const editor = useCreateBlockNote(
     {
