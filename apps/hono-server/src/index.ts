@@ -12,7 +12,7 @@ const hocuspocus = new Hocuspocus({
   extensions: [
     new Database({
       fetch: async ({ context }) => {
-        const { document, userId } = context
+        const { document } = context
         if (document) {
           return document.document
         } else return null
