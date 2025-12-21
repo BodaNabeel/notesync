@@ -6,8 +6,8 @@ export default async function validateToken(token: string) {
             new URL('http://localhost:3000/api/auth/jwks')
         )
         const { payload } = await jwtVerify(token, JWKS, {
-            issuer: process.env.BETTER_AUTH_URL, // Should match your JWT issuer, which is the BASE_URL
-            audience: process.env.BETTER_AUTH_URL, // Should match your JWT audience, which is the BASE_URL by default
+            issuer: process.env.BETTER_AUTH_URL,
+            audience: process.env.BETTER_AUTH_URL,
         })
         return payload
     } catch (error) {
