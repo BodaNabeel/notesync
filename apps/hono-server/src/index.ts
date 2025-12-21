@@ -52,7 +52,7 @@ const hocuspocus = new Hocuspocus({
     console.log(documentName, userId);
 
     const [document] = await db
-      .select()
+      .select({ document: documentTable.document })
       .from(documentTable)
       .where(
         and(
