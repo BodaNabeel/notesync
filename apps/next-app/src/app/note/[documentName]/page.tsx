@@ -5,7 +5,7 @@ import { and, documentTable, eq } from "@note/db";
 import { randomUUID } from "crypto";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { redirect, RedirectType } from "next/navigation";
+import { notFound, redirect, RedirectType } from "next/navigation";
 
 export default async function Page({
   params,
@@ -17,38 +17,40 @@ export default async function Page({
   });
 
   const { documentName } = await params;
+
+  if (!session) {
+    redirect(`/auth?documentName=${documentName}`, RedirectType.replace);
+  }
+
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(documentName)) {
+    notFound();
+  }
+
   const [hasDocumentAccess] = await db
-    .select()
+    .select({
+      id: documentTable.id,
+    })
     .from(documentTable)
     .where(
       and(
         eq(documentTable.id, documentName),
-        eq(documentTable.ownerId, session?.user.id as string)
+        eq(documentTable.ownerId, session.user.id)
       )
     )
     .limit(1);
 
-  // checking for user authentication
-  if (!session) {
-    // notFound();
-    redirect(`/auth?documentName=${documentName}`, RedirectType.replace);
-  }
   if (!hasDocumentAccess) {
-    // TODO: Redirect to a path that will show proper error and the option to go to home
-    redirect("/not-found");
+    notFound();
   }
 
   return (
     <main className="flex h-screen">
       <Link href={`/note/${randomUUID()}`}>New</Link>
-      {/* aside navbar */}
       <aside className="w-[15%] bg-[#ece7e2]/10 h-full"></aside>
-
       <section className="w-full">
-        {/* tool-bar */}
         <div className="h-20 p-4 ">workspace / product / vision</div>
-
-        {/* editor */}
         <Editor session={session.session} documentName={documentName} />
       </section>
     </main>
