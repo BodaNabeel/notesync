@@ -1,16 +1,15 @@
 "use client";
 
-import * as Y from "yjs";
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
 import "@blocknote/core/fonts/inter.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { Session } from "better-auth";
-import { useMemo, useEffect, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import * as Y from "yjs";
 
 const NAMES = [
   "John",
@@ -69,7 +68,6 @@ export default function Editor({
 }) {
   const { token, loading: authLoading, error: authError } = useAuth();
   const [editorState, setEditorState] = useState<EditorState>("loading");
-  const router = useRouter();
   const doc = useMemo(() => new Y.Doc(), []);
 
   const provider = useMemo(() => {
@@ -82,12 +80,11 @@ export default function Editor({
       onConnect() {
         setEditorState("connected");
       },
-
       onClose: ({}) => {
         // Handle unexpected disconnections
       },
     });
-  }, [token, documentName, doc, router]);
+  }, [token, documentName, doc]);
 
   useEffect(() => {
     return () => {
