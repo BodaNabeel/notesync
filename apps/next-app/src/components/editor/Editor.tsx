@@ -82,9 +82,7 @@ export default function Editor({
       onConnect() {
         setEditorState("connected");
       },
-      onAuthenticationFailed: () => {
-        router.push("/not-found");
-      },
+
       onClose: ({}) => {
         // Handle unexpected disconnections
       },
