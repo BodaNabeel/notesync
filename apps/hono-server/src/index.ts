@@ -5,8 +5,8 @@ import { createNodeWebSocket } from "@hono/node-ws";
 import { documentTable, eq, and } from "@note/db";
 import { Hono } from "hono";
 import { db } from "./db.ts";
-import { verifyJWT } from "./auth.ts";
 import * as Y from "yjs"
+import validateToken from "./libs/ValidateToken.ts";
 
 const hocuspocus = new Hocuspocus({
   extensions: [
@@ -43,13 +43,12 @@ const hocuspocus = new Hocuspocus({
       throw new Error("Token is required to proceed further.");
     }
 
-    const payload = await verifyJWT(token);
+    const payload = await validateToken(token);
     if (!payload) {
       throw new Error("Access denied. You do not have permission to access this resource.");
     }
 
     const userId = payload.id as string;
-    console.log(documentName, userId);
 
     const [document] = await db
       .select({ document: documentTable.document })
