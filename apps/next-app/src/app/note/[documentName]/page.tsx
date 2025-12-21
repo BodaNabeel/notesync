@@ -1,3 +1,4 @@
+import CreateDocumentButton from "@/components/editor/CreateDocumentButton";
 import { Editor } from "@/components/editor/DynamicEditor";
 import { db } from "@/database/drizzle";
 import { auth } from "@/lib/auth";
@@ -6,6 +7,7 @@ import { randomUUID } from "crypto";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound, redirect, RedirectType } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function Page({
   params,
@@ -28,30 +30,32 @@ export default async function Page({
     notFound();
   }
 
-  const [hasDocumentAccess] = await db
-    .select({
-      id: documentTable.id,
-    })
-    .from(documentTable)
-    .where(
-      and(
-        eq(documentTable.id, documentName),
-        eq(documentTable.ownerId, session.user.id)
-      )
-    )
-    .limit(1);
+  // const [hasDocumentAccess] = await db
+  //   .select({
+  //     id: documentTable.id,
+  //   })
+  //   .from(documentTable)
+  //   .where(
+  //     and(
+  //       eq(documentTable.id, documentName),
+  //       eq(documentTable.ownerId, session.user.id)
+  //     )
+  //   )
+  //   .limit(1);
 
-  if (!hasDocumentAccess) {
-    notFound();
-  }
+  // if (!hasDocumentAccess) {
+  //   notFound();
+  // }
 
   return (
     <main className="flex h-screen">
-      <Link href={`/note/${randomUUID()}`}>New</Link>
+      <CreateDocumentButton session={session.session} />
       <aside className="w-[15%] bg-[#ece7e2]/10 h-full"></aside>
       <section className="w-full">
         <div className="h-20 p-4 ">workspace / product / vision</div>
-        <Editor session={session.session} documentName={documentName} />
+        <Suspense fallback={<p>fallback loading....</p>}>
+          <Editor session={session.session} documentName={documentName} />
+        </Suspense>
       </section>
     </main>
   );

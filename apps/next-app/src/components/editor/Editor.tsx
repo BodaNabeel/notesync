@@ -8,6 +8,7 @@ import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { Session } from "better-auth";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import * as Y from "yjs";
 
@@ -79,6 +80,9 @@ export default function Editor({
       token: token,
       onConnect() {
         setEditorState("connected");
+      },
+      onAuthenticationFailed: () => {
+        redirect("/not-found");
       },
       onClose: ({}) => {
         // Handle unexpected disconnections
