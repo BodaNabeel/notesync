@@ -2,65 +2,80 @@ import { Database } from "@hocuspocus/extension-database";
 import { Hocuspocus } from "@hocuspocus/server";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
-import { documentTable, eq } from "@note/db";
+import { documentTable, eq, and } from "@note/db";
 import { Hono } from "hono";
 import { db } from "./db.ts";
+import * as Y from "yjs"
+import validateToken from "./libs/ValidateToken.ts";
 
-// Configure Hocuspocus
 const hocuspocus = new Hocuspocus({
-  debounce: 5000,
   extensions: [
     new Database({
-      async fetch({ documentName }) {
-        try {
-          const result = await db
-            .select()
-            .from(documentTable)
-            .where(eq(documentTable.id, documentName))
-            .limit(1);
-
-          if (result.length === 0) {
-            return null
-          }
-          return result[0].document
-
-        } catch (error) {
-          console.log(`error occurred while fetching document: ${documentName}`, documentName)
-          return null
-        }
-
-      },
-
-      async store({ documentName, state }) {
-        try {
-          await db
-            .insert(documentTable)
-            .values({
-              id: documentName,
-              document: state,
-            }).onConflictDoUpdate({
-              target: documentTable.id,
-              set: {
-                document: state,
-                lastModified: new Date(),
-              }
-            })
-        } catch (error) {
-          console.log(`error occurred while inserting document with documentName: ${documentName}`, error)
-        }
-
+      fetch: async ({ context }) => {
+        const { document } = context
+        if (document) {
+          return document.document
+        } else return null
       }
     })
   ],
+
+  onStoreDocument: async ({ documentName, document, context }) => {
+    const update = Y.encodeStateAsUpdate(document);
+
+    await db
+      .insert(documentTable)
+      .values({
+        id: documentName,
+        ownerId: context.userId,
+        document: update,
+      })
+      .onConflictDoUpdate({
+        target: documentTable.id,
+        set: {
+          document: update,
+          lastModified: new Date(),
+        },
+      });
+  },
+  async onAuthenticate({ documentName, token }) {
+    if (!token) {
+      throw new Error("Token is required to proceed further.");
+    }
+
+    const payload = await validateToken(token);
+    if (!payload) {
+      throw new Error("Access denied. You do not have permission to access this resource.");
+    }
+
+    const userId = payload.id as string;
+
+    const [document] = await db
+      .select({ document: documentTable.document })
+      .from(documentTable)
+      .where(
+        and(
+          eq(documentTable.id, documentName),
+          eq(documentTable.ownerId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!document) {
+      throw new Error("Access denied. You do not have permission to access this resource.");
+    }
+
+    return {
+      userId,
+      document
+    };
+  }
 });
 
-// Setup Hono server
 const app = new Hono();
 
-// Node.js specific
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 
-// We mount HocusPocus in the Hono server
 app.get(
   "/hocuspocus",
   upgradeWebSocket((c) => ({
