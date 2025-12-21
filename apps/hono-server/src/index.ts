@@ -20,35 +20,38 @@ const hocuspocus = new Hocuspocus({
     })
   ],
 
-  onStoreDocument: async ({ documentName, document, context }) => {
+  onStoreDocument: async ({ documentName, document, context, }) => {
     const update = Y.encodeStateAsUpdate(document);
 
     await db
-      .insert(documentTable)
-      .values({
-        id: documentName,
-        ownerId: context.userId,
-        document: update,
-      })
-      .onConflictDoUpdate({
-        target: documentTable.id,
-        set: {
-          document: update,
-          lastModified: new Date(),
-        },
-      });
+      .update(documentTable).set({
+        document: update, lastModified: new Date()
+      }).where(eq(documentTable.id, documentName))
+
   },
-  async onAuthenticate({ documentName, token }) {
+  async onAuthenticate({ documentName, token, requestParameters }) {
     if (!token) {
       throw new Error("Token is required to proceed further.");
     }
 
+    const createDocument: string | null = requestParameters.get("new")
     const payload = await validateToken(token);
+    const userId = payload.id as string;
+
     if (!payload) {
       throw new Error("Access denied. You do not have permission to access this resource.");
     }
 
-    const userId = payload.id as string;
+    if (createDocument === "true") {
+      await db.insert(documentTable).values({
+        id: documentName,
+        ownerId: userId,
+      }).onConflictDoNothing()
+      return {
+        document: null
+      }
+    }
+    console.log("outside of create doc")
 
     const [document] = await db
       .select({ document: documentTable.document })

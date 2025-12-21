@@ -1,28 +1,19 @@
 import CreateDocumentButton from "@/components/editor/CreateDocumentButton";
 import { Editor } from "@/components/editor/DynamicEditor";
-import { db } from "@/database/drizzle";
-import { auth } from "@/lib/auth";
-import { and, documentTable, eq } from "@note/db";
 import { randomUUID } from "crypto";
-import { headers } from "next/headers";
 import Link from "next/link";
-import { notFound, redirect, RedirectType } from "next/navigation";
-import { Suspense } from "react";
+import { notFound } from "next/navigation";
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ documentName: string }>;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
   const { documentName } = await params;
 
-  if (!session) {
-    redirect(`/auth?documentName=${documentName}`, RedirectType.replace);
-  }
+  // if (!session) {
+  //   redirect(`/auth?documentName=${documentName}`, RedirectType.replace);
+  // }
 
   const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -49,13 +40,13 @@ export default async function Page({
 
   return (
     <main className="flex h-screen">
-      <CreateDocumentButton session={session.session} />
-      <aside className="w-[15%] bg-[#ece7e2]/10 h-full"></aside>
+      <aside className="w-[15%] bg-[#ece7e2]/10 h-full">
+        {/* <CreateDocumentButton /> */}
+        <Link href={`/note/${randomUUID()}?new=true`}>Create Document</Link>
+      </aside>
       <section className="w-full">
         <div className="h-20 p-4 ">workspace / product / vision</div>
-        <Suspense fallback={<p>fallback loading....</p>}>
-          <Editor session={session.session} documentName={documentName} />
-        </Suspense>
+        <Editor documentName={documentName} />
       </section>
     </main>
   );
