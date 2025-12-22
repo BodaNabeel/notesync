@@ -10,6 +10,7 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import { redirect, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import * as Y from "yjs";
+import EditorSkeleton from "./EditorSkeleton";
 
 type EditorState = "loading" | "connected" | "error";
 
@@ -74,13 +75,13 @@ export default function Editor({ documentName }: { documentName: string }) {
   const isLoading = authLoading || editorState === "loading";
 
   if (isLoading) {
-    return <p>Loading....</p>;
+    return <EditorSkeleton />;
   }
 
   return (
     <div
       onClick={() => editor.focus()}
-      className="max-w-5xl mx-auto min-h-[calc(100vh-100px)] pb-80"
+      className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80 mt-16"
     >
       <BlockNoteView editor={editor} shadCNComponents={{ DropdownMenu }} />
     </div>
