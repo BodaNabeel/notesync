@@ -34,7 +34,7 @@ export default async function Page({
       </aside>
       <section className="w-full">
         <div className="h-20 p-4 ">workspace / product / vision</div>
-        <Editor documentName={documentName} />
+        <Editor documentName={documentName} session={session} />
       </section>
     </main>
   );

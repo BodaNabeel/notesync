@@ -12,16 +12,46 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import * as Y from "yjs";
 import EditorSkeleton from "./EditorSkeleton";
+import { Session, User } from "better-auth";
 
 type EditorState = "loading" | "connected" | "error";
 
-export default function Editor({ documentName }: { documentName: string }) {
+interface UserDetails {
+  session: Session;
+  user: User;
+}
+
+const collaboratorColors = [
+  "#FF6B6B",
+  "#4ECDC4",
+  "#45B7D1",
+  "#FFA07A",
+  "#98D8C8",
+  "#F7DC6F",
+  "#BB8FCE",
+  "#F8B195",
+  "#6C5CE7",
+  "#A8E6CF",
+];
+
+export default function Editor({
+  documentName,
+  session,
+}: {
+  documentName: string;
+  session: UserDetails;
+}) {
+  const [userColor] = useState(
+    () =>
+      collaboratorColors[Math.floor(Math.random() * collaboratorColors.length)]
+  );
   const { token, loading: authLoading } = useAuth();
   const [editorState, setEditorState] = useState<EditorState>("loading");
-  const doc = useMemo(() => new Y.Doc(), []);
+
   const searchParams = useSearchParams();
   const createDocument = searchParams.get("new");
 
+  const doc = useMemo(() => new Y.Doc(), []);
   const provider = useMemo(() => {
     if (!token) return null;
     return new HocuspocusProvider({
@@ -63,8 +93,8 @@ export default function Editor({ documentName }: { documentName: string }) {
             provider,
             fragment: doc.getXmlFragment("default"),
             user: {
-              name: "FOo",
-              color: "#989552",
+              name: session?.user?.name,
+              color: userColor,
             },
             showCursorLabels: "activity",
           }
