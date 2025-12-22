@@ -8,6 +8,7 @@ import { db } from "./db.ts";
 import * as Y from "yjs"
 import validateToken from "./libs/ValidateToken.ts";
 
+
 const hocuspocus = new Hocuspocus({
   extensions: [
     new Database({
@@ -29,16 +30,28 @@ const hocuspocus = new Hocuspocus({
       }).where(eq(documentTable.id, documentName))
 
   },
-  async onAuthenticate({ documentName, token }) {
+  async onAuthenticate({ documentName, token, requestParameters }) {
     if (!token) {
       throw new Error("Token is required to proceed further.");
     }
 
     const payload = await validateToken(token);
-    const userId = payload.id as string;
+    const userId = payload.id as string
+    const createDocument = requestParameters.get("new")
 
     if (!payload) {
       throw new Error("Access denied. You do not have permission to access this resource.");
+    }
+
+    if (createDocument === "true") {
+
+      await db.insert(documentTable).values({
+        id: documentName, ownerId: userId
+      }).onConflictDoNothing()
+
+      return {
+        document: null
+      }
     }
 
     const [document] = await db
