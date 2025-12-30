@@ -1,7 +1,7 @@
 "use client";
 
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import "@blocknote/core/fonts/inter.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
@@ -13,13 +13,9 @@ import { useEffect, useMemo, useState } from "react";
 import * as Y from "yjs";
 import EditorSkeleton from "./EditorSkeleton";
 import { Session, User } from "better-auth";
+import { UserDetails } from "@/lib/types";
 
 type EditorState = "loading" | "connected" | "error";
-
-interface UserDetails {
-  session: Session;
-  user: User;
-}
 
 const collaboratorColors = [
   "#FF6B6B",
