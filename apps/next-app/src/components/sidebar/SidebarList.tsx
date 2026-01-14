@@ -1,5 +1,5 @@
 "use client";
-import { deleteDocument, fetchDocuments } from "@/action/docment-list";
+import { deleteDocument, getDocuments } from "@/action/docment-list";
 import { cn } from "@/lib/utils";
 import {
   InfiniteData,
@@ -14,7 +14,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import SidebarListSkeleton from "./SidebarListSkeleton";
 
-// const LIMIT_PER_PAGE = 30;
+const LIMIT_PER_PAGE = 30;
 function SidebarList() {
   const queryClient = useQueryClient();
   const pathname = usePathname();
@@ -23,9 +23,11 @@ function SidebarList() {
   const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: ["document-list"],
-      initialPageParam: null as string | null,
-      queryFn: ({ pageParam }) => fetchDocuments(pageParam),
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      queryFn: ({ pageParam }) => getDocuments(pageParam, LIMIT_PER_PAGE),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => {
+        return lastPage.nextCursor;
+      },
     });
 
   const deleteThreadMutation = useMutation({

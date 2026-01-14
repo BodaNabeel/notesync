@@ -2,10 +2,10 @@
 
 import { db } from "@/database/drizzle";
 import { auth } from "@/lib/auth";
-import { and, desc, documentTable, eq, lt } from "@note/db";
+import { desc, documentTable, count, eq } from "@note/db";
 import { headers } from "next/headers";
 
-export async function fetchDocuments(cursor: string | null) {
+export async function getDocuments(page = 1, limit = 10) {
     try {
         const session = await auth.api.getSession({
             headers: await headers(),
@@ -14,31 +14,30 @@ export async function fetchDocuments(cursor: string | null) {
         if (!session) {
             throw new Error("Unauthenticated");
         }
-        // const offset = (page - 1) * limit;
+        const offset = (page - 1) * limit;
+
         const documents = await db
             .select({
                 title: documentTable.title,
                 documentId: documentTable.id,
-                createdAt: documentTable.createdAt,
             })
             .from(documentTable)
-            .where(
-                and(
-                    eq(documentTable.ownerId, session.user.id),
-                    cursor
-                        ? lt(documentTable.createdAt, new Date(cursor))
-                        : undefined
-                )
-            )
-            .orderBy(desc(documentTable.createdAt))
-            .limit(30);
+            .where(eq(documentTable.ownerId, session.user.id))
+            .orderBy(
+                desc(documentTable.createdAt),
+                desc(documentTable.id)
+            ).limit(limit)
+            .offset(offset);
+
+        const [{ total }] = await db
+            .select({ total: count() })
+            .from(documentTable)
+            .where(eq(documentTable.ownerId, session.user.id));
         return {
 
             documents,
-            nextCursor:
-                documents.length > 0
-                    ? documents[documents.length - 1].createdAt.toISOString()
-                    : null,
+            total,
+            nextCursor: offset + limit < total ? page + 1 : null,
         };
     } catch (_error) {
         throw new Error("Failed to fetch document list");
