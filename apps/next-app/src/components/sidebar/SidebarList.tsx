@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import SidebarListSkeleton from "./SidebarListSkeleton";
@@ -20,6 +20,8 @@ function SidebarList() {
   const pathname = usePathname();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
+  const { documentName } = useParams<{ documentName: string }>();
+  const router = useRouter();
   const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: ["document-list"],
@@ -83,6 +85,28 @@ function SidebarList() {
     }
   }, [inView, hasNextPage, fetchNextPage]);
 
+  const handleDelete = (documentId: string) => {
+    deleteThreadMutation.mutate(documentId);
+
+    if (documentName === documentId) {
+      console.log(window.history);
+      console.log(window.history.length);
+      if (window.history.length > 2) {
+        router.back();
+      } else {
+        const isFirstItem =
+          data?.pages[0].documents[0].documentId === documentId;
+        if (isFirstItem) {
+          router.push(`/note/${data?.pages[0].documents[1].documentId}`);
+        } else {
+          router.push(`/note/${data?.pages[0].documents[0].documentId}`);
+        }
+        console.log(data);
+        // TODO: Add a fallback id guard so when user deletes all note, user doesn't get a 404
+      }
+    }
+    // console.log(documentName);
+  };
   if (isLoading) return <SidebarListSkeleton count={12} />;
   if (data) {
     return (
@@ -112,10 +136,7 @@ function SidebarList() {
                 </Link>
                 {hoveredId === data.documentId && (
                   <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      deleteThreadMutation.mutate(data.documentId);
-                    }}
+                    onClick={() => handleDelete(data.documentId)}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                   >
                     <Trash2 size={16} />

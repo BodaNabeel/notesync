@@ -6,7 +6,7 @@ import * as Y from "yjs";
 
 type Props = {
   doc: Y.Doc;
-  documentTitle: string | undefined;
+  documentTitle: string | undefined | null;
   documentName: string;
 };
 
