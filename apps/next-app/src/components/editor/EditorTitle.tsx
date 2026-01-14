@@ -90,7 +90,7 @@ export default function EditorTitle({
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Untitled page"
         rows={1}
-        className="text-3xl font-bold outline-none placeholder:text-gray-400 w-full resize-none overflow-hidden"
+        className="text-4xl font-bold outline-none placeholder:text-gray-400 w-full resize-none overflow-hidden"
       />
     </div>
   );

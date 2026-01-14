@@ -8,7 +8,7 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { TriangleAlert } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
@@ -65,8 +65,41 @@ export default function Editor({
       onConnect() {
         setEditorState("connected");
         if (createDocument === "true") {
-          queryClient.invalidateQueries({ queryKey: ["document-list"] });
-          meta.set("title", null);
+          queryClient.setQueryData(
+            ["document-list"],
+            (
+              old:
+                | InfiniteData<{
+                    documents: {
+                      title: string;
+                      documentId: string;
+                    }[];
+                    total: number;
+                    nextCursor: number | null;
+                  }>
+                | undefined
+            ) => {
+              if (!old) return old;
+
+              const newDocument = {
+                title: "",
+                documentId: documentName,
+              };
+
+              return {
+                ...old,
+                pages: old.pages.map((page, index) => {
+                  if (index !== 0) return page;
+
+                  return {
+                    ...page,
+                    documents: [newDocument, ...page.documents],
+                  };
+                }),
+              };
+            }
+          );
+
           const newUrl = `/note/${documentName}`;
           window.history.pushState(
             { ...window.history.state, as: newUrl, url: newUrl },
@@ -82,7 +115,7 @@ export default function Editor({
     });
 
     return hocuspocusProvider;
-  }, [token, documentName, doc, createDocument, queryClient, meta]);
+  }, [token, documentName, doc, createDocument, queryClient]);
 
   useEffect(() => {
     return () => {
@@ -148,7 +181,7 @@ export default function Editor({
       />
       <div
         onClick={() => editor.focus()}
-        className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80"
+        className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80 mt-8"
       >
         <BlockNoteView editor={editor} shadCNComponents={{ DropdownMenu }} />
       </div>
