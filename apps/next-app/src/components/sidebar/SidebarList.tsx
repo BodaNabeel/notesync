@@ -66,8 +66,8 @@ function SidebarList() {
       return { previousList };
     },
 
-    onError: (err, newTodo, onMutateResult) => {
-      console.log("triggering error");
+    onError: (err, variable, onMutateResult) => {
+      alert("Error occurred while deleting document!");
       queryClient.setQueryData(["document-list"], onMutateResult?.previousList);
     },
 
@@ -109,7 +109,7 @@ function SidebarList() {
                   )}
                   href={`/note/${data.documentId}`}
                 >
-                  {data.title} {i}
+                  {data.title}
                 </Link>
                 {hoveredId === data.documentId && (
                   <button
