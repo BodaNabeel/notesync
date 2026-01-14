@@ -2,10 +2,10 @@
 
 import { db } from "@/database/drizzle";
 import { auth } from "@/lib/auth";
-import { desc, documentTable, count, eq } from "@note/db";
+import { and, desc, documentTable, eq, lt } from "@note/db";
 import { headers } from "next/headers";
 
-export async function getDocuments(page = 1, limit = 10) {
+export async function fetchDocuments(cursor: string | null) {
     try {
         const session = await auth.api.getSession({
             headers: await headers(),
@@ -14,32 +14,49 @@ export async function getDocuments(page = 1, limit = 10) {
         if (!session) {
             throw new Error("Unauthenticated");
         }
-        console.log(session)
-        const offset = (page - 1) * limit;
-
+        // const offset = (page - 1) * limit;
         const documents = await db
             .select({
                 title: documentTable.title,
                 documentId: documentTable.id,
+                createdAt: documentTable.createdAt,
             })
             .from(documentTable)
-            .where(eq(documentTable.ownerId, session.user.id))
+            .where(
+                and(
+                    eq(documentTable.ownerId, session.user.id),
+                    cursor
+                        ? lt(documentTable.createdAt, new Date(cursor))
+                        : undefined
+                )
+            )
             .orderBy(desc(documentTable.createdAt))
-            .limit(limit)
-            .offset(offset);
-
-        const [{ total }] = await db
-            .select({ total: count() })
-            .from(documentTable)
-            .where(eq(documentTable.ownerId, session.user.id));
-        console.log(total)
+            .limit(30);
         return {
+
             documents,
-            total,
-            nextCursor: offset + limit < total ? page + 1 : null,
+            nextCursor:
+                documents.length > 0
+                    ? documents[documents.length - 1].createdAt.toISOString()
+                    : null,
         };
-    } catch (error) {
-        console.error("getDocuments failed:", error);
+    } catch (_error) {
         throw new Error("Failed to fetch document list");
+    }
+}
+
+export async function deleteDocument(documentId: string) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session) {
+            throw new Error("Unauthenticated");
+        }
+        await db.delete(documentTable).where(eq(documentTable.id, documentId))
+
+    } catch {
+        throw new Error("Failed to delete document")
     }
 }
