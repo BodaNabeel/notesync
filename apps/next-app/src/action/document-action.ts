@@ -34,13 +34,33 @@ export async function getDocuments(page = 1, limit = 10) {
             .from(documentTable)
             .where(eq(documentTable.ownerId, session.user.id));
         return {
-
             documents,
             total,
             nextCursor: offset + limit < total ? page + 1 : null,
         };
     } catch (_error) {
         throw new Error("Failed to fetch document list");
+    }
+}
+
+export async function fetchDocumentTitle(documentId: string) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session) {
+            throw new Error("Unauthenticated");
+        }
+        const [result] = await db
+            .select({ title: documentTable.title })
+            .from(documentTable)
+            .where(eq(documentTable.id, documentId))
+            .limit(1);
+        return result?.title
+
+    } catch {
+        throw new Error("Failed to fetch document title")
     }
 }
 

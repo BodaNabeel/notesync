@@ -2,10 +2,10 @@ import { Database } from "@hocuspocus/extension-database";
 import { Hocuspocus } from "@hocuspocus/server";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
-import { documentTable, eq, and } from "@note/db";
+import { and, documentTable, eq } from "@note/db";
 import { Hono } from "hono";
+import * as Y from "yjs";
 import { db } from "./db.ts";
-import * as Y from "yjs"
 import validateToken from "./libs/ValidateToken.ts";
 
 
@@ -23,10 +23,11 @@ const hocuspocus = new Hocuspocus({
 
   onStoreDocument: async ({ documentName, document }) => {
     const update = Y.encodeStateAsUpdate(document);
-
+    const meta = document.getMap("meta");
+    const title = meta.get("title") ?? null
     await db
       .update(documentTable).set({
-        document: update, lastModified: new Date()
+        document: update, lastModified: new Date(), title: title as string
       }).where(eq(documentTable.id, documentName))
 
   },
@@ -44,7 +45,6 @@ const hocuspocus = new Hocuspocus({
     }
 
     if (createDocument === "true") {
-
       await db.insert(documentTable).values({
         id: documentName, ownerId: userId
       }).onConflictDoNothing()
@@ -55,7 +55,7 @@ const hocuspocus = new Hocuspocus({
     }
 
     const [document] = await db
-      .select({ document: documentTable.document })
+      .select({ document: documentTable.document, title: documentTable.title })
       .from(documentTable)
       .where(
         and(
@@ -70,7 +70,8 @@ const hocuspocus = new Hocuspocus({
     }
 
     return {
-      document
+      document: document.document,
+      documentTitle: "hello",
     };
   }
 });

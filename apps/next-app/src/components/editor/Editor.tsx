@@ -9,11 +9,13 @@ import "@blocknote/shadcn/style.css";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { TriangleAlert } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import * as Y from "yjs";
 import EditorSkeleton from "./EditorSkeleton";
 import { Session, User } from "better-auth";
 import { UserDetails } from "@/lib/types";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import EditorTitle from "./EditorTitle";
 
 type EditorState = "loading" | "connected" | "error";
 
@@ -46,11 +48,12 @@ export default function Editor({
 
   const searchParams = useSearchParams();
   const createDocument = searchParams.get("new");
+  const queryClient = useQueryClient();
 
   const doc = useMemo(() => new Y.Doc(), []);
   const provider = useMemo(() => {
     if (!token) return null;
-    return new HocuspocusProvider({
+    const hocuspocusProvider = new HocuspocusProvider({
       url: `${process.env.NEXT_PUBLIC_HONO_SERVER_URL!}${
         createDocument === "true" ? "?new=true" : ""
       }`,
@@ -60,7 +63,9 @@ export default function Editor({
 
       onConnect() {
         setEditorState("connected");
+        console.log(hocuspocusProvider);
         if (createDocument === "true") {
+          queryClient.invalidateQueries({ queryKey: ["document-list"] });
           const newUrl = `/note/${documentName}`;
           window.history.pushState(
             { ...window.history.state, as: newUrl, url: newUrl },
@@ -68,13 +73,16 @@ export default function Editor({
             newUrl
           );
         }
+        console.log(doc);
       },
       onAuthenticationFailed: () => {
         setEditorState("error");
       },
       onClose: ({}) => {},
     });
-  }, [token, documentName, doc, createDocument]);
+
+    return hocuspocusProvider;
+  }, [token, documentName, doc, createDocument, queryClient]);
 
   useEffect(() => {
     return () => {
@@ -123,11 +131,18 @@ export default function Editor({
   }
 
   return (
-    <div
-      onClick={() => editor.focus()}
-      className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80 mt-16"
-    >
-      <BlockNoteView editor={editor} shadCNComponents={{ DropdownMenu }} />
-    </div>
+    <Fragment>
+      <EditorTitle
+        doc={doc}
+        documentName={documentName}
+        token={session.session.id}
+      />
+      <div
+        onClick={() => editor.focus()}
+        className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80 mt-16"
+      >
+        <BlockNoteView editor={editor} shadCNComponents={{ DropdownMenu }} />
+      </div>
+    </Fragment>
   );
 }

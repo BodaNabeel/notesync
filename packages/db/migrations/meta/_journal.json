@@ -50,6 +50,13 @@
       "when": 1766320401413,
       "tag": "0006_warm_trauma",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1768391075041,
+      "tag": "0007_huge_emma_frost",
+      "breakpoints": true
     }
   ]
 }

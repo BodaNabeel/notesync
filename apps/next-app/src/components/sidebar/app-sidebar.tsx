@@ -20,7 +20,7 @@ export function AppSidebar() {
         </h1>
         <Button asChild>
           {/* TODO: FIx the same UUID always */}
-          <Link href={`/note/${randomUUID()}?new=true`} prefetch>
+          <Link href={`/note/${randomUUID()}?new=true`}>
             Create Document <PlusIcon />
           </Link>
         </Button>

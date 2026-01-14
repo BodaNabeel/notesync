@@ -1,5 +1,4 @@
 "use client";
-import { deleteDocument, getDocuments } from "@/action/docment-list";
 import { cn } from "@/lib/utils";
 import {
   InfiniteData,
@@ -13,6 +12,7 @@ import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import SidebarListSkeleton from "./SidebarListSkeleton";
+import { deleteDocument, getDocuments } from "@/action/document-action";
 
 const LIMIT_PER_PAGE = 30;
 function SidebarList() {
@@ -50,7 +50,6 @@ function SidebarList() {
             nextCursor: number | null;
           }>
         ) => {
-          console.log("trigger");
           return {
             ...old,
             pages: old.pages.map((page) => ({
@@ -75,8 +74,6 @@ function SidebarList() {
       queryClient.invalidateQueries({ queryKey: ["document-list"] });
     },
   });
-
-  const { variables, mutate, isError } = deleteThreadMutation;
 
   const [ref, inView] = useInView();
 
@@ -109,13 +106,13 @@ function SidebarList() {
                   )}
                   href={`/note/${data.documentId}`}
                 >
-                  {data.title}
+                  {data.title ?? "Untitled Page"}
                 </Link>
                 {hoveredId === data.documentId && (
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      mutate(data.documentId);
+                      deleteThreadMutation.mutate(data.documentId);
                     }}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                   >

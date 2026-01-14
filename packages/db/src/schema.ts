@@ -30,7 +30,7 @@ export const documentTable = pgTable("document_table", {
     id: uuid("id").primaryKey().notNull(),
     createdAt: timestamp("createdAt").notNull().defaultNow(),
     lastModified: timestamp("lastModified").notNull().defaultNow(),
-    title: text("title").notNull().default("Untitled Doc"),
+    title: text("title"),
     document: bytea("document"),
     documentAccessType: text("document_access_type")
         .$type<"private" | "public">()
