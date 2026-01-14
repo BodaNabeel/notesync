@@ -1,31 +1,32 @@
 "use client";
 
-import { fetchDocumentTitle } from "@/action/document-action";
-import { useEffect, useState } from "react";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import * as Y from "yjs";
 
 type Props = {
   doc: Y.Doc;
+  documentTitle: string | undefined;
   documentName: string;
-  token: string;
 };
 
-export default function EditorTitle({ doc, documentName, token }: Props) {
+export default function EditorTitle({
+  doc,
+  documentTitle,
+  documentName,
+}: Props) {
   const [title, setTitle] = useState<string>("");
-
   const meta = doc.getMap("meta");
-
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (meta.get("title")) return;
-    const handleTitleChange = async () => {
-      const title = await fetchDocumentTitle(documentName);
-      console.log(title);
-      if (!meta.get("title") && title) {
-        meta.set("title", title);
+    const handleTitleChange = () => {
+      if (!meta.get("title") && documentTitle) {
+        meta.set("title", documentTitle);
       }
     };
     handleTitleChange();
-  }, [documentName, token, meta]);
+  }, [meta, documentTitle]);
 
   useEffect(() => {
     const update = () => {
@@ -40,19 +41,57 @@ export default function EditorTitle({ doc, documentName, token }: Props) {
 
   const handleChange = (value: string) => {
     meta.set("title", value);
+
+    queryClient.setQueryData(
+      ["document-list"],
+      (
+        old:
+          | InfiniteData<{
+              documents: {
+                title: string;
+                documentId: string;
+              }[];
+              total: number;
+              nextCursor: number | null;
+            }>
+          | undefined
+      ) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          pages: old.pages.map((page) => ({
+            ...page,
+            documents: page.documents.map((document) =>
+              document.documentId === documentName
+                ? { ...document, title: value }
+                : document
+            ),
+          })),
+        };
+      }
+    );
   };
 
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (!textareaRef.current) return;
+
+    textareaRef.current.style.height = "0px";
+    textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+  }, [title]);
+
   return (
-    <input
-      value={title}
-      onChange={(e) => handleChange(e.target.value)}
-      placeholder="Untitled page"
-      className="
-        text-3xl font-bold
-        outline-none
-        border
-        placeholder:text-gray-400
-      "
-    />
+    <div className="max-w-5xl mx-auto">
+      <textarea
+        ref={textareaRef}
+        value={title}
+        onChange={(e) => handleChange(e.target.value)}
+        placeholder="Untitled page"
+        rows={1}
+        className="text-3xl font-bold outline-none placeholder:text-gray-400 w-full resize-none overflow-hidden"
+      />
+    </div>
   );
 }

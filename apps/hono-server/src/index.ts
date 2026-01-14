@@ -7,6 +7,7 @@ import { Hono } from "hono";
 import * as Y from "yjs";
 import { db } from "./db.ts";
 import validateToken from "./libs/ValidateToken.ts";
+import { error } from "console";
 
 
 const hocuspocus = new Hocuspocus({
@@ -15,20 +16,26 @@ const hocuspocus = new Hocuspocus({
       fetch: async ({ context }) => {
         const { document } = context
         if (document) {
-          return document.document
+          return document
         } else return null
       }
     })
   ],
 
   onStoreDocument: async ({ documentName, document }) => {
+
     const update = Y.encodeStateAsUpdate(document);
     const meta = document.getMap("meta");
     const title = meta.get("title") ?? null
-    await db
-      .update(documentTable).set({
-        document: update, lastModified: new Date(), title: title as string
-      }).where(eq(documentTable.id, documentName))
+
+    try {
+      await db
+        .update(documentTable).set({
+          document: update, lastModified: new Date(), title: title as string
+        }).where(eq(documentTable.id, documentName))
+    } catch (err) {
+      console.error(`[ERROR]: Error storing document ${error}`)
+    }
 
   },
   async onAuthenticate({ documentName, token, requestParameters }) {
@@ -48,7 +55,6 @@ const hocuspocus = new Hocuspocus({
       await db.insert(documentTable).values({
         id: documentName, ownerId: userId
       }).onConflictDoNothing()
-
       return {
         document: null
       }

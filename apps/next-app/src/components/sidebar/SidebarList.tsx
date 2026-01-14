@@ -106,7 +106,9 @@ function SidebarList() {
                   )}
                   href={`/note/${data.documentId}`}
                 >
-                  {data.title ?? "Untitled Page"}
+                  {data.title && data.title.length > 0
+                    ? data.title
+                    : "Untitled Page"}
                 </Link>
                 {hoveredId === data.documentId && (
                   <button

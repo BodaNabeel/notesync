@@ -2,20 +2,20 @@
 
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
+import { UserDetails } from "@/lib/types";
 import "@blocknote/core/fonts/inter.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
 import { HocuspocusProvider } from "@hocuspocus/provider";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { TriangleAlert } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import * as Y from "yjs";
 import EditorSkeleton from "./EditorSkeleton";
-import { Session, User } from "better-auth";
-import { UserDetails } from "@/lib/types";
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import EditorTitle from "./EditorTitle";
+import { fetchDocumentTitle } from "@/action/document-action";
 
 type EditorState = "loading" | "connected" | "error";
 
@@ -51,6 +51,7 @@ export default function Editor({
   const queryClient = useQueryClient();
 
   const doc = useMemo(() => new Y.Doc(), []);
+  const meta = doc.getMap("meta");
   const provider = useMemo(() => {
     if (!token) return null;
     const hocuspocusProvider = new HocuspocusProvider({
@@ -63,9 +64,9 @@ export default function Editor({
 
       onConnect() {
         setEditorState("connected");
-        console.log(hocuspocusProvider);
         if (createDocument === "true") {
           queryClient.invalidateQueries({ queryKey: ["document-list"] });
+          meta.set("title", null);
           const newUrl = `/note/${documentName}`;
           window.history.pushState(
             { ...window.history.state, as: newUrl, url: newUrl },
@@ -73,7 +74,6 @@ export default function Editor({
             newUrl
           );
         }
-        console.log(doc);
       },
       onAuthenticationFailed: () => {
         setEditorState("error");
@@ -82,13 +82,21 @@ export default function Editor({
     });
 
     return hocuspocusProvider;
-  }, [token, documentName, doc, createDocument, queryClient]);
+  }, [token, documentName, doc, createDocument, queryClient, meta]);
 
   useEffect(() => {
     return () => {
       provider?.destroy();
     };
   }, [provider]);
+
+  const { data: documentTitle, isLoading: documentTitleLoading } = useQuery({
+    queryKey: [`document-title-${documentName}`],
+    queryFn: async () => {
+      const title = await fetchDocumentTitle(documentName);
+      return title;
+    },
+  });
 
   const editor = useCreateBlockNote(
     {
@@ -107,7 +115,8 @@ export default function Editor({
     [provider, doc]
   );
 
-  const isLoading = authLoading || editorState === "loading";
+  const isLoading =
+    authLoading || editorState === "loading" || documentTitleLoading;
 
   if (isLoading) {
     return <EditorSkeleton />;
@@ -133,13 +142,13 @@ export default function Editor({
   return (
     <Fragment>
       <EditorTitle
-        doc={doc}
         documentName={documentName}
-        token={session.session.id}
+        documentTitle={documentTitle}
+        doc={doc}
       />
       <div
         onClick={() => editor.focus()}
-        className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80 mt-16"
+        className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80"
       >
         <BlockNoteView editor={editor} shadCNComponents={{ DropdownMenu }} />
       </div>
