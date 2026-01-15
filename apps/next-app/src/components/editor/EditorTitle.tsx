@@ -83,14 +83,14 @@ export default function EditorTitle({
   }, [title]);
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-4xl mx-auto">
       <textarea
         ref={textareaRef}
         value={title}
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Untitled page"
         rows={1}
-        className="text-5xl -ml-2 font-bold outline-none placeholder:text-gray-400 w-full resize-none overflow-hidden"
+        className="text-5xl -ml-3 font-bold outline-none placeholder:text-gray-400 w-full resize-none overflow-hidden"
       />
     </div>
   );
