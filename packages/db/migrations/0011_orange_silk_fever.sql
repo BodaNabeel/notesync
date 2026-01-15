@@ -1,0 +1,1 @@
+ALTER TABLE "document_table" ALTER COLUMN "document_edit_mode" SET DEFAULT null;

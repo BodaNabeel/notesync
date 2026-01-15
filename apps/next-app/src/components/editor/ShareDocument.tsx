@@ -1,3 +1,4 @@
+"use client";
 import {
   Dialog,
   DialogContent,
@@ -17,21 +18,33 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import {
+  documentLinkGeneration,
+  documentLinkRevocation,
+} from "@/action/document-action";
 
 interface DocumentDetail {
-  documentPublic: boolean;
-  documentEditMode: "viewer" | "editor";
+  documentAccessType: "public" | "private";
+  documentEditMode: "editor" | "viewer" | null;
 }
 
 export default function ShareDocument({
   documentDetail,
   userName,
   userEmail,
+  documentName,
 }: {
   userName: string;
   userEmail: string;
   documentDetail: DocumentDetail;
+  documentName: string;
 }) {
+  const handleGenerate = async (documentName: string) => {
+    await documentLinkGeneration(documentName, "editor");
+  };
+  const handleRevoke = async (documentName: string) => {
+    await documentLinkRevocation(documentName);
+  };
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -77,23 +90,29 @@ export default function ShareDocument({
         </div>
 
         <div className="space-y-4">
-          {!documentDetail.documentPublic && (
-            <Button className="w-full" size={"lg"}>
+          {documentDetail.documentAccessType === "private" && (
+            <Button
+              onClick={() => documentLinkGeneration(documentName, "editor")}
+              className="w-full"
+              size={"lg"}
+            >
               <Link2 />
               Generate Link
             </Button>
           )}
 
           <Button
-            disabled={!documentDetail.documentPublic}
+            //   onClick={handleCopyDocumentLink}
+            disabled={documentDetail.documentAccessType === "private"}
             className="w-full disabled:bg-gray-600/50"
             size={"lg"}
           >
             <Copy />
             Copy Link
           </Button>
-          {documentDetail.documentPublic && (
+          {documentDetail.documentAccessType === "public" && (
             <Button
+              onClick={() => documentLinkRevocation(documentName)}
               variant={"outline"}
               className="w-full border-red-400 text-red-400 font-semibold hover:bg-red-400 hover:text-white!"
               size={"lg"}

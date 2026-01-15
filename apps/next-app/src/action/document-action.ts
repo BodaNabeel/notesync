@@ -79,3 +79,33 @@ export async function deleteDocument(documentId: string) {
         throw new Error("Failed to delete document")
     }
 }
+
+export async function documentLinkGeneration(documentId: string, documentEditMode: "editor" | "viewer") {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session) {
+            throw new Error("Unauthenticated");
+        }
+        await db.update(documentTable).set({ documentEditMode: documentEditMode, documentAccessType: "public" }).where(eq(documentTable.id, documentId))
+    } catch {
+        throw new Error("[ERROR]: Document Link Generation Failed")
+    }
+}
+
+export async function documentLinkRevocation(documentId: string) {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session) {
+            throw new Error("Unauthenticated");
+        }
+        await db.update(documentTable).set({ documentEditMode: null, documentAccessType: "private" }).where(eq(documentTable.id, documentId))
+    } catch {
+        throw new Error("[ERROR]: Document Link Generation Failed")
+    }
+}

@@ -31,6 +31,7 @@ export const documentTable = pgTable("document_table", {
     createdAt: timestamp("createdAt").notNull().defaultNow(),
     lastModified: timestamp("lastModified").notNull().defaultNow(),
     title: text("title"),
+    documentEditMode: text("document_edit_mode").$type<"editor" | "viewer" | null>().default(null),
     document: bytea("document"),
     documentAccessType: text("document_access_type")
         .$type<"private" | "public">()

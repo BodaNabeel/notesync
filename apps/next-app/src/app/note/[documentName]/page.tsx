@@ -13,11 +13,6 @@ export default async function Page({
 }) {
   const { documentName } = await params;
 
-  interface DocumentDetail {
-    documentPublic: boolean;
-    documentEditMode: "viewer" | "editor";
-  }
-
   const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(documentName)) {
@@ -30,11 +25,17 @@ export default async function Page({
   if (!session) {
     redirect("/auth");
   }
-  // const [documentDetail] = await db.select({documentPublic: documentTable.document_public, documentEditMode: documentTable.edit_mode}).from(documentTable).where(eq(documentTable.id, documentName)).limit(1)
-  const documentDetail: DocumentDetail = {
-    documentPublic: true,
-    documentEditMode: "viewer",
-  };
+  const [documentDetail] = await db
+    .select({
+      documentAccessType: documentTable.documentAccessType,
+      documentEditMode: documentTable.documentEditMode,
+    })
+    .from(documentTable)
+    .where(eq(documentTable.id, documentName))
+    .limit(1);
+
+  console.log(documentDetail);
+
   return (
     <>
       <div className="flex items-center justify-between  mx-8">
@@ -43,6 +44,7 @@ export default async function Page({
           documentDetail={documentDetail}
           userName={session.user.name}
           userEmail={session.user.email}
+          documentName={documentName}
         />
       </div>
       <Editor documentName={documentName} session={session} />
