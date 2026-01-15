@@ -2,11 +2,13 @@ import { Database } from "@hocuspocus/extension-database";
 import { Hocuspocus } from "@hocuspocus/server";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
-import { documentTable, eq, and } from "@note/db";
+import { and, documentTable, eq } from "@note/db";
 import { Hono } from "hono";
+import * as Y from "yjs";
 import { db } from "./db.ts";
-import * as Y from "yjs"
 import validateToken from "./libs/ValidateToken.ts";
+import { error } from "console";
+
 
 const hocuspocus = new Hocuspocus({
   extensions: [
@@ -14,44 +16,52 @@ const hocuspocus = new Hocuspocus({
       fetch: async ({ context }) => {
         const { document } = context
         if (document) {
-          return document.document
+          return document
         } else return null
       }
     })
   ],
 
-  onStoreDocument: async ({ documentName, document, context }) => {
-    const update = Y.encodeStateAsUpdate(document);
+  onStoreDocument: async ({ documentName, document }) => {
 
-    await db
-      .insert(documentTable)
-      .values({
-        id: documentName,
-        ownerId: context.userId,
-        document: update,
-      })
-      .onConflictDoUpdate({
-        target: documentTable.id,
-        set: {
-          document: update,
-          lastModified: new Date(),
-        },
-      });
+    const update = Y.encodeStateAsUpdate(document);
+    const meta = document.getMap("meta");
+    const title = meta.get("title") ?? null
+
+    try {
+      await db
+        .update(documentTable).set({
+          document: update, lastModified: new Date(), title: title as string
+        }).where(eq(documentTable.id, documentName))
+    } catch (err) {
+      console.error(`[ERROR]: Error storing document ${error}`)
+    }
+
   },
-  async onAuthenticate({ documentName, token }) {
+  async onAuthenticate({ documentName, token, requestParameters }) {
     if (!token) {
       throw new Error("Token is required to proceed further.");
     }
 
     const payload = await validateToken(token);
+    const userId = payload.id as string
+    const createDocument = requestParameters.get("new")
+
     if (!payload) {
       throw new Error("Access denied. You do not have permission to access this resource.");
     }
 
-    const userId = payload.id as string;
+    if (createDocument === "true") {
+      await db.insert(documentTable).values({
+        id: documentName, ownerId: userId
+      }).onConflictDoNothing()
+      return {
+        document: null
+      }
+    }
 
     const [document] = await db
-      .select({ document: documentTable.document })
+      .select({ document: documentTable.document, title: documentTable.title })
       .from(documentTable)
       .where(
         and(
@@ -66,8 +76,8 @@ const hocuspocus = new Hocuspocus({
     }
 
     return {
-      userId,
-      document
+      document: document.document,
+      documentTitle: "hello",
     };
   }
 });

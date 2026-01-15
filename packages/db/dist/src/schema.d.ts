@@ -178,8 +178,8 @@ export declare const documentTable: import("drizzle-orm/pg-core").PgTableWithCol
             columnType: "PgText";
             data: string;
             driverParam: string;
-            notNull: true;
-            hasDefault: true;
+            notNull: false;
+            hasDefault: false;
             isPrimaryKey: false;
             isAutoincrement: false;
             hasRuntimeDefault: false;
@@ -195,7 +195,7 @@ export declare const documentTable: import("drizzle-orm/pg-core").PgTableWithCol
             columnType: "PgCustomColumn";
             data: Uint8Array<ArrayBufferLike>;
             driverParam: Buffer<ArrayBufferLike>;
-            notNull: true;
+            notNull: false;
             hasDefault: false;
             isPrimaryKey: false;
             isAutoincrement: false;

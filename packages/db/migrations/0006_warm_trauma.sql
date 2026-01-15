@@ -1,0 +1,1 @@
+ALTER TABLE "document_table" ALTER COLUMN "document" DROP NOT NULL;

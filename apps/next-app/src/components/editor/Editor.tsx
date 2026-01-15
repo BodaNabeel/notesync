@@ -1,96 +1,135 @@
 "use client";
 
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
+import { UserDetails } from "@/lib/types";
 import "@blocknote/core/fonts/inter.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import { Session } from "better-auth";
-import { useEffect, useMemo, useState } from "react";
+import { InfiniteData, useQuery, useQueryClient } from "@tanstack/react-query";
+import { TriangleAlert } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import * as Y from "yjs";
-
-const NAMES = [
-  "John",
-  "Mike",
-  "Sarah",
-  "Emma",
-  "David",
-  "Alex",
-  "Lisa",
-  "James",
-  "Rachel",
-  "Chris",
-  "Anna",
-  "Michael",
-  "Nicole",
-  "Daniel",
-  "Jessica",
-  "Robert",
-  "Lauren",
-  "Kevin",
-  "Sophia",
-  "Thomas",
-];
-
-const COLORS = [
-  "#ff2240",
-  "#3498db",
-  "#2ecc71",
-  "#f39c12",
-  "#e74c3c",
-  "#9b59b6",
-  "#1abc9c",
-  "#34495e",
-  "#e67e22",
-  "#c0392b",
-  "#16a085",
-  "#27ae60",
-  "#2980b9",
-  "#8e44ad",
-  "#d35400",
-  "#c0392b",
-  "#7f8c8d",
-  "#2c3e50",
-  "#f1c40f",
-  "#bdc3c7",
-];
+import EditorSkeleton from "./EditorSkeleton";
+import EditorTitle from "./EditorTitle";
+import { fetchDocumentTitle } from "@/action/document-action";
 
 type EditorState = "loading" | "connected" | "error";
+
+const collaboratorColors = [
+  "#FF6B6B",
+  "#4ECDC4",
+  "#45B7D1",
+  "#FFA07A",
+  "#98D8C8",
+  "#F7DC6F",
+  "#BB8FCE",
+  "#F8B195",
+  "#6C5CE7",
+  "#A8E6CF",
+];
 
 export default function Editor({
   documentName,
   session,
 }: {
   documentName: string;
-  session: Session;
+  session: UserDetails;
 }) {
-  const { token, loading: authLoading, error: authError } = useAuth();
+  const [userColor] = useState(
+    () =>
+      collaboratorColors[Math.floor(Math.random() * collaboratorColors.length)]
+  );
+  const { token, loading: authLoading } = useAuth();
   const [editorState, setEditorState] = useState<EditorState>("loading");
-  const doc = useMemo(() => new Y.Doc(), []);
 
+  const searchParams = useSearchParams();
+  const createDocument = searchParams.get("new");
+  const queryClient = useQueryClient();
+
+  const doc = useMemo(() => new Y.Doc(), []);
+  const meta = doc.getMap("meta");
   const provider = useMemo(() => {
     if (!token) return null;
-    return new HocuspocusProvider({
-      url: process.env.NEXT_PUBLIC_HONO_SERVER_URL!,
+    const hocuspocusProvider = new HocuspocusProvider({
+      url: `${process.env.NEXT_PUBLIC_HONO_SERVER_URL!}${
+        createDocument === "true" ? "?new=true" : ""
+      }`,
       name: documentName,
       document: doc,
-      token: token,
+      token,
+
       onConnect() {
         setEditorState("connected");
+        if (createDocument === "true") {
+          queryClient.setQueryData(
+            ["document-list"],
+            (
+              old:
+                | InfiniteData<{
+                    documents: {
+                      title: string;
+                      documentId: string;
+                    }[];
+                    total: number;
+                    nextCursor: number | null;
+                  }>
+                | undefined
+            ) => {
+              if (!old) return old;
+
+              const newDocument = {
+                title: "",
+                documentId: documentName,
+              };
+
+              return {
+                ...old,
+                pages: old.pages.map((page, index) => {
+                  if (index !== 0) return page;
+
+                  return {
+                    ...page,
+                    documents: [newDocument, ...page.documents],
+                  };
+                }),
+              };
+            }
+          );
+
+          const newUrl = `/note/${documentName}`;
+          window.history.pushState(
+            { ...window.history.state, as: newUrl, url: newUrl },
+            "",
+            newUrl
+          );
+        }
       },
-      onClose: ({}) => {
-        // Handle unexpected disconnections
+      onAuthenticationFailed: () => {
+        setEditorState("error");
       },
+      onClose: ({}) => {},
     });
-  }, [token, documentName, doc]);
+
+    return hocuspocusProvider;
+  }, [token, documentName, doc, createDocument, queryClient]);
 
   useEffect(() => {
     return () => {
       provider?.destroy();
     };
   }, [provider]);
+
+  const { data: documentTitle, isLoading: documentTitleLoading } = useQuery({
+    queryKey: [`document-title-${documentName}`],
+    queryFn: async () => {
+      const title = await fetchDocumentTitle(documentName);
+      return title;
+    },
+  });
 
   const editor = useCreateBlockNote(
     {
@@ -99,8 +138,8 @@ export default function Editor({
             provider,
             fragment: doc.getXmlFragment("default"),
             user: {
-              name: "FOo",
-              color: "red",
+              name: session?.user?.name,
+              color: userColor,
             },
             showCursorLabels: "activity",
           }
@@ -109,17 +148,43 @@ export default function Editor({
     [provider, doc]
   );
 
-  const isLoading = authLoading || editorState === "loading";
+  const isLoading =
+    authLoading || editorState === "loading" || documentTitleLoading;
+
   if (isLoading) {
-    return <p>Loading....</p>;
+    return <EditorSkeleton />;
+  }
+
+  if (editorState === "error") {
+    return (
+      <div className="max-w-2xl mx-auto min-h-[calc(100vh-200px)] pb-80 mt-16 flex flex-col items-center justify-center">
+        <div className="bg-red-300/40 w-fit  rounded-full p-6">
+          <TriangleAlert color="red" size={40} />
+        </div>
+        <div className="mt-6 *:text-center space-y-2">
+          <h1 className="text-3xl font-extrabold">Document Not Found</h1>
+          <p className="text-gray-600">
+            This document doesn&apos;t exist or you don&apos;t have permission
+            to view it.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div
-      onClick={() => editor.focus()}
-      className="max-w-5xl mx-auto min-h-[calc(100vh-100px)] pb-80"
-    >
-      <BlockNoteView editor={editor} shadCNComponents={{ DropdownMenu }} />
-    </div>
+    <Fragment>
+      <EditorTitle
+        documentName={documentName}
+        documentTitle={documentTitle}
+        doc={doc}
+      />
+      <div
+        onClick={() => editor.focus()}
+        className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80 mt-8"
+      >
+        <BlockNoteView editor={editor} shadCNComponents={{ DropdownMenu }} />
+      </div>
+    </Fragment>
   );
 }

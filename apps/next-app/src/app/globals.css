@@ -89,7 +89,7 @@
   --chart-3: oklch(0.7841 0.0954 56.3677);
   --chart-4: oklch(0.8745 0.0657 70.5371);
   --chart-5: oklch(0.9516 0.0277 76.21);
-  --sidebar: oklch(1 0 0);
+  --sidebar: oklch(97.96% 0.002 67.8);
   --sidebar-foreground: oklch(0.3012 0 0);
   --sidebar-primary: oklch(0.541 0.094 47.9965);
   --sidebar-primary-foreground: oklch(1 0 0);
@@ -194,6 +194,7 @@
     @apply bg-background text-foreground;
   }
 }
-.bn-container[data-theming-css-variables-demo][data-color-scheme] {
-  --bn-colors-editor-background: var(--color-background);
+
+.tiptap {
+  background: var(--background) !important;
 }
