@@ -89,8 +89,6 @@ function SidebarList() {
     deleteThreadMutation.mutate(documentId);
 
     if (documentName === documentId) {
-      console.log(window.history);
-      console.log(window.history.length);
       if (window.history.length > 2) {
         router.back();
       } else {
@@ -101,11 +99,9 @@ function SidebarList() {
         } else {
           router.push(`/note/${data?.pages[0].documents[0].documentId}`);
         }
-        console.log(data);
         // TODO: Add a fallback id guard so when user deletes all note, user doesn't get a 404
       }
     }
-    // console.log(documentName);
   };
   if (isLoading) return <SidebarListSkeleton count={12} />;
   if (data) {

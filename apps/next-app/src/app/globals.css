@@ -194,6 +194,7 @@
     @apply bg-background text-foreground;
   }
 }
-.bn-container[data-theming-css-variables-demo][data-color-scheme] {
-  --bn-colors-editor-background: var(--color-background);
+
+.tiptap {
+  background: var(--background) !important;
 }
