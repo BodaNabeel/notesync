@@ -23,6 +23,7 @@ import {
   documentLinkRevocation,
 } from "@/action/document-action";
 import { useState, useTransition } from "react";
+import { CopyLinkButton } from "./CopyLinkButton";
 
 interface DocumentDetail {
   documentAccessType: "public" | "private";
@@ -147,14 +148,7 @@ export default function ShareDocument({
             </Button>
           )}
           {documentDetails.documentAccessType === "public" && (
-            <Button
-              disabled={isPending}
-              className="w-full disabled:bg-gray-600/50 disabled:text-black  text-lg"
-              size={"lg"}
-            >
-              <Copy />
-              Copy Link
-            </Button>
+            <CopyLinkButton />
           )}
 
           {documentDetails.documentAccessType === "public" && (
