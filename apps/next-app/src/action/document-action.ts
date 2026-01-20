@@ -4,6 +4,7 @@ import { db } from "@/database/drizzle";
 import { auth } from "@/lib/auth";
 import { desc, documentTable, count, eq } from "@note/db";
 import { headers } from "next/headers";
+import * as z from "zod"
 
 export async function getDocuments(page = 1, limit = 10) {
     try {
@@ -80,32 +81,48 @@ export async function deleteDocument(documentId: string) {
     }
 }
 
-export async function documentLinkGeneration(documentId: string, documentEditMode: "editor" | "viewer") {
-    try {
-        const session = await auth.api.getSession({
-            headers: await headers(),
-        });
+const DocumentEditModeSchema = z.enum(["editor", "viewer"]);
+const DocumentLinkGenerationSchema = z.object({
+    documentName: z.uuid(),
+    documentEditMode: DocumentEditModeSchema,
+});
 
-        if (!session) {
-            throw new Error("Unauthenticated");
-        }
-        await db.update(documentTable).set({ documentEditMode: documentEditMode, documentAccessType: "public" }).where(eq(documentTable.id, documentId))
+
+export async function documentLinkGeneration(input: unknown) {
+
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session) {
+        throw new Error("Unauthenticated");
+    }
+
+    try {
+        const { documentName, documentEditMode } =
+            DocumentLinkGenerationSchema.parse(input);
+        await db.update(documentTable).set({ documentEditMode: documentEditMode, documentAccessType: "public" }).where(eq(documentTable.id, documentName))
+        return { success: true }
     } catch {
-        throw new Error("[ERROR]: Document Link Generation Failed")
+        return {
+            success: false,
+            error: "DOCUMENT_LINK_GENERATION_FAILED",
+        };
     }
 }
 
 export async function documentLinkRevocation(documentId: string) {
-    try {
-        const session = await auth.api.getSession({
-            headers: await headers(),
-        });
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
 
-        if (!session) {
-            throw new Error("Unauthenticated");
-        }
+    if (!session) {
+        throw new Error("Unauthenticated");
+    }
+    try {
         await db.update(documentTable).set({ documentEditMode: null, documentAccessType: "private" }).where(eq(documentTable.id, documentId))
+        return { success: true }
     } catch {
-        throw new Error("[ERROR]: Document Link Generation Failed")
+        return { success: false, error: "DOCUMENT_LINK_REVOCATION_FAILED" }
     }
 }

@@ -22,6 +22,7 @@ import {
   documentLinkGeneration,
   documentLinkRevocation,
 } from "@/action/document-action";
+import { useState, useTransition } from "react";
 
 interface DocumentDetail {
   documentAccessType: "public" | "private";
@@ -39,12 +40,21 @@ export default function ShareDocument({
   documentDetail: DocumentDetail;
   documentName: string;
 }) {
-  const handleGenerate = async (documentName: string) => {
-    await documentLinkGeneration(documentName, "editor");
+  const [isPending, startTransition] = useTransition();
+  const [documentEditMode, setDocumentEditMode] = useState<"editor" | "viewer">(
+    documentDetail.documentEditMode ?? "editor",
+  );
+  const handleLinkGeneration = (documentEditMode: "editor" | "viewer") => {
+    return documentLinkGeneration({
+      documentName: documentName,
+      documentEditMode: documentEditMode,
+    });
   };
-  const handleRevoke = async (documentName: string) => {
-    await documentLinkRevocation(documentName);
+  const handleLinkRevocation = () => {
+    return documentLinkRevocation(documentName);
   };
+  const [documentDetails, setDocumentDetails] =
+    useState<DocumentDetail>(documentDetail);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -70,55 +80,106 @@ export default function ShareDocument({
           <Badge variant={"default"}>Owner</Badge>
         </div>
 
-        <div className="space-y-2.5">
-          <h1 className="font-semibold text-lg">
-            What will be the access mode?
-          </h1>
-          <Select defaultValue="viewer">
-            <SelectTrigger className="w-full border border-primary text-md py-6">
+        <div className=" flex items-center justify-between">
+          <div>
+            <h1 className="font-semibold text-lg">Anyone with the link</h1>
+            <p className="text-sm text-gray-600">
+              Anyone with the link can{" "}
+              {documentEditMode === "viewer" ? "view" : "edit"} the document
+            </p>
+          </div>
+          <Select
+            disabled={isPending}
+            onValueChange={(newValue: "editor" | "viewer") => {
+              setDocumentEditMode(newValue);
+              startTransition(async () => {
+                const result = await handleLinkGeneration(newValue);
+                if (!result.success) {
+                  return alert("Document Link Generation Failed");
+                } else {
+                  setDocumentDetails({
+                    documentAccessType: "public",
+                    documentEditMode: newValue,
+                  });
+                }
+              });
+            }}
+            value={documentDetails.documentEditMode ?? "editor"}
+          >
+            <SelectTrigger className=" border border-primary text-md py-4">
               <SelectValue placeholder="Select access" />
             </SelectTrigger>
             <SelectContent className="">
-              <SelectItem value="viewer" className="text-md">
-                Anyone with the link can only view
-              </SelectItem>
               <SelectItem value="editor" className="text-md">
-                Anyone with the link can edit
+                Edit Doc
+              </SelectItem>
+              <SelectItem value="viewer" className="text-md">
+                View Doc
               </SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="space-y-4">
-          {documentDetail.documentAccessType === "private" && (
+          {documentDetails.documentAccessType === "private" && (
             <Button
-              onClick={() => documentLinkGeneration(documentName, "editor")}
-              className="w-full"
+              disabled={isPending}
+              onClick={() =>
+                startTransition(async () => {
+                  const result = await handleLinkGeneration(
+                    documentDetails.documentEditMode ?? "editor",
+                  );
+                  if (!result.success) {
+                    return alert("Document Link Generation Failed");
+                  } else {
+                    setDocumentDetails((prev) => ({
+                      ...prev,
+                      documentAccessType: "public",
+                    }));
+                  }
+                })
+              }
+              className="w-full text-lg"
               size={"lg"}
             >
               <Link2 />
-              Generate Link
+              {isPending ? "Generating..." : "Generate Link"}
+            </Button>
+          )}
+          {documentDetails.documentAccessType === "public" && (
+            <Button
+              disabled={isPending}
+              className="w-full disabled:bg-gray-600/50 disabled:text-black  text-lg"
+              size={"lg"}
+            >
+              <Copy />
+              Copy Link
             </Button>
           )}
 
-          <Button
-            //   onClick={handleCopyDocumentLink}
-            disabled={documentDetail.documentAccessType === "private"}
-            className="w-full disabled:bg-gray-600/50"
-            size={"lg"}
-          >
-            <Copy />
-            Copy Link
-          </Button>
-          {documentDetail.documentAccessType === "public" && (
+          {documentDetails.documentAccessType === "public" && (
             <Button
-              onClick={() => documentLinkRevocation(documentName)}
+              disabled={isPending}
+              onClick={() =>
+                startTransition(async () => {
+                  const result = await handleLinkRevocation();
+                  if (!result.success) {
+                    alert("Document Link Revocation Failed");
+                  } else {
+                    setDocumentDetails({
+                      documentAccessType: "private",
+                      documentEditMode: null,
+                    });
+                    setDocumentEditMode("editor");
+                  }
+                })
+              }
               variant={"outline"}
-              className="w-full border-red-400 text-red-400 font-semibold hover:bg-red-400 hover:text-white!"
+              className="w-full border-red-400 text-red-400 font-semibold hover:bg-red-400 hover:text-white! text-lg"
               size={"lg"}
             >
               <Link2Icon strokeWidth="3" />
-              Revoke Access
+              {isPending ? "Revoking Access..." : "Revoke Access"}
             </Button>
           )}
         </div>
