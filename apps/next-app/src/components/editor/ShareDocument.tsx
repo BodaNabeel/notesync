@@ -177,7 +177,7 @@ export default function ShareDocument({
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                transition={{ duration: 0.18, ease: "easeOut" }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
                 className="space-y-3"
               >
                 <CopyLinkButton isPending={isPending} />

@@ -11,14 +11,11 @@ export function CopyLinkButton({
   isPending: boolean;
 }) {
   const [copied, setCopied] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
-  const handleCopy = () => {
-    startTransition(async () => {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1000);
-    });
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1000);
   };
 
   return (
