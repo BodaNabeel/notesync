@@ -3,8 +3,13 @@
 import { useState, useTransition } from "react";
 import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import * as motion from "motion/react-client";
 
-export function CopyLinkButton() {
+export function CopyLinkButton({
+  isPending: isPendingParent,
+}: {
+  isPending: boolean;
+}) {
   const [copied, setCopied] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -17,14 +22,16 @@ export function CopyLinkButton() {
   };
 
   return (
-    <Button
-      onClick={handleCopy}
-      disabled={isPending}
-      className="w-full disabled:bg-gray-600/50 disabled:text-black text-lg"
-      size="lg"
-    >
-      {copied ? <Check /> : <Copy />}
-      {copied ? "Copied" : "Copy Link"}
-    </Button>
+    <motion.div layoutId="copy-btn">
+      <Button
+        onClick={handleCopy}
+        disabled={isPendingParent}
+        className="w-full disabled:bg-gray-600/50 disabled:text-black text-lg"
+        size="lg"
+      >
+        {copied ? <Check /> : <Copy />}
+        {copied ? "Copied" : "Copy Link"}
+      </Button>
+    </motion.div>
   );
 }
