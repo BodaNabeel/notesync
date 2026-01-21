@@ -10,7 +10,7 @@ import "@blocknote/shadcn/style.css";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { InfiniteData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { TriangleAlert } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import * as Y from "yjs";
 import EditorSkeleton from "./EditorSkeleton";
@@ -35,23 +35,24 @@ const collaboratorColors = [
 export default function Editor({
   documentName,
   session,
+  editable,
 }: {
   documentName: string;
   session: UserDetails;
+  editable: boolean;
 }) {
   const [userColor] = useState(
     () =>
-      collaboratorColors[Math.floor(Math.random() * collaboratorColors.length)]
+      collaboratorColors[Math.floor(Math.random() * collaboratorColors.length)],
   );
   const { token, loading: authLoading } = useAuth();
   const [editorState, setEditorState] = useState<EditorState>("loading");
-
+  const router = useRouter();
   const searchParams = useSearchParams();
   const createDocument = searchParams.get("new");
   const queryClient = useQueryClient();
 
   const doc = useMemo(() => new Y.Doc(), []);
-  const meta = doc.getMap("meta");
   const provider = useMemo(() => {
     if (!token) return null;
     const hocuspocusProvider = new HocuspocusProvider({
@@ -77,7 +78,7 @@ export default function Editor({
                     total: number;
                     nextCursor: number | null;
                   }>
-                | undefined
+                | undefined,
             ) => {
               if (!old) return old;
 
@@ -97,15 +98,9 @@ export default function Editor({
                   };
                 }),
               };
-            }
+            },
           );
-
-          const newUrl = `/note/${documentName}`;
-          window.history.pushState(
-            { ...window.history.state, as: newUrl, url: newUrl },
-            "",
-            newUrl
-          );
+          router.replace(`/note/${documentName}`);
         }
       },
       onAuthenticationFailed: () => {
@@ -115,7 +110,7 @@ export default function Editor({
     });
 
     return hocuspocusProvider;
-  }, [token, documentName, doc, createDocument, queryClient]);
+  }, [router, token, documentName, doc, createDocument, queryClient]);
 
   useEffect(() => {
     return () => {
@@ -145,7 +140,7 @@ export default function Editor({
           }
         : undefined,
     },
-    [provider, doc]
+    [provider, doc],
   );
 
   const isLoading =
@@ -178,12 +173,17 @@ export default function Editor({
         documentName={documentName}
         documentTitle={documentTitle}
         doc={doc}
+        editable={editable}
       />
       <div
         onClick={() => editor.focus()}
         className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80 mt-8"
       >
-        <BlockNoteView editor={editor} shadCNComponents={{ DropdownMenu }} />
+        <BlockNoteView
+          editable={editable}
+          editor={editor}
+          shadCNComponents={{ DropdownMenu }}
+        />
       </div>
     </Fragment>
   );

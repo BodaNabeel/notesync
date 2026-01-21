@@ -5,11 +5,8 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { randomUUID } from "crypto";
-import Link from "next/link";
-import { Button } from "../ui/button";
-import { PlusIcon } from "lucide-react";
 import SidebarList from "./SidebarList";
+import CreateDocumentBtn from "./CreateDocumentBtn";
 
 export function AppSidebar() {
   return (
@@ -18,12 +15,7 @@ export function AppSidebar() {
         <h1 className="text-center font-bold text-lg mb-4">
           Collaboration Notes
         </h1>
-        <Button asChild>
-          {/* TODO: FIx the same UUID always */}
-          <Link href={`/note/${randomUUID()}?new=true`}>
-            Create Document <PlusIcon />
-          </Link>
-        </Button>
+        <CreateDocumentBtn />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

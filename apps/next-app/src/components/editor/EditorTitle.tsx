@@ -8,12 +8,14 @@ type Props = {
   doc: Y.Doc;
   documentTitle: string | undefined | null;
   documentName: string;
+  editable: boolean;
 };
 
 export default function EditorTitle({
   doc,
   documentTitle,
   documentName,
+  editable,
 }: Props) {
   const [title, setTitle] = useState<string>("");
   const meta = doc.getMap("meta");
@@ -54,7 +56,7 @@ export default function EditorTitle({
               total: number;
               nextCursor: number | null;
             }>
-          | undefined
+          | undefined,
       ) => {
         if (!old) return old;
 
@@ -65,11 +67,11 @@ export default function EditorTitle({
             documents: page.documents.map((document) =>
               document.documentId === documentName
                 ? { ...document, title: value }
-                : document
+                : document,
             ),
           })),
         };
-      }
+      },
     );
   };
 
@@ -83,14 +85,15 @@ export default function EditorTitle({
   }, [title]);
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto mt-12">
       <textarea
+        disabled={!editable}
         ref={textareaRef}
         value={title}
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Untitled page"
         rows={1}
-        className="text-5xl -ml-3 font-bold outline-none placeholder:text-gray-400 w-full resize-none overflow-hidden"
+        className="text-5xl ml-12 lg:-ml-3 font-bold outline-none placeholder:text-gray-400 w-full resize-none overflow-hidden"
       />
     </div>
   );

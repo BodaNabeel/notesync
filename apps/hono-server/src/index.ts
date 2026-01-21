@@ -2,7 +2,7 @@ import { Database } from "@hocuspocus/extension-database";
 import { Hocuspocus } from "@hocuspocus/server";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
-import { and, documentTable, eq } from "@note/db";
+import { and, documentTable, eq, or } from "@note/db";
 import { Hono } from "hono";
 import * as Y from "yjs";
 import { db } from "./db.ts";
@@ -38,7 +38,7 @@ const hocuspocus = new Hocuspocus({
     }
 
   },
-  async onAuthenticate({ documentName, token, requestParameters }) {
+  async onAuthenticate({ documentName, token, requestParameters, connectionConfig, context }) {
     if (!token) {
       throw new Error("Token is required to proceed further.");
     }
@@ -61,23 +61,46 @@ const hocuspocus = new Hocuspocus({
     }
 
     const [document] = await db
-      .select({ document: documentTable.document, title: documentTable.title })
+      .select({
+        document: documentTable.document,
+        ownerId: documentTable.ownerId,
+        documentEditMode: documentTable.documentEditMode,
+      })
       .from(documentTable)
       .where(
         and(
           eq(documentTable.id, documentName),
-          eq(documentTable.ownerId, userId)
+          or(
+            eq(documentTable.ownerId, userId),
+            eq(documentTable.documentAccessType, "public")
+          )
         )
       )
       .limit(1);
-
     if (!document) {
       throw new Error("Access denied. You do not have permission to access this resource.");
     }
 
+
+    if (document.ownerId !== userId && document.documentEditMode === "viewer") {
+      connectionConfig.readOnly = true
+      context.awareness = {
+        user: {
+          readOnly: true,
+        },
+      }
+    } else {
+      context.awareness = {
+        user: {
+          readOnly: false,
+        },
+      }
+    }
+
+
+    // connectionConfig.readOnly = true;
     return {
-      document: document.document,
-      documentTitle: "hello",
+      document: document.document
     };
   }
 });

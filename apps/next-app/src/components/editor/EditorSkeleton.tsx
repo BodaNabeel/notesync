@@ -1,6 +1,6 @@
 export default function EditorSkeleton() {
   return (
-    <div className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80">
+    <div className="max-w-5xl mt-12 mx-auto min-h-[calc(100vh-200px)] pb-80">
       <div className="animate-pulse">
         {/* Editor content skeleton */}
         <div className="space-y-4 px-4">
