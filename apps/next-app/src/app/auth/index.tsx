@@ -26,6 +26,5 @@ export const Route = createFileRoute("/auth/")({
 
 function Page() {
   const { documentName } = Route.useSearch();
-  console.log(documentName);
   return <SignUp documentName={documentName} />;
 }

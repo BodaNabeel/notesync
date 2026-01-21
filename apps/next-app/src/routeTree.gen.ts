@@ -10,9 +10,7 @@
 
 import { Route as rootRouteImport } from './app/__root'
 import { Route as IndexRouteImport } from './app/index'
-import { Route as SortIndexRouteImport } from './app/sort/index'
 import { Route as NoteIndexRouteImport } from './app/note/index'
-import { Route as DashboardIndexRouteImport } from './app/dashboard/index'
 import { Route as AuthIndexRouteImport } from './app/auth/index'
 import { Route as NoteDocumentNameRouteImport } from './app/note/$documentName'
 import { Route as ApiAuthSplatRouteImport } from './app/api/auth/$'
@@ -22,19 +20,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SortIndexRoute = SortIndexRouteImport.update({
-  id: '/sort/',
-  path: '/sort/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const NoteIndexRoute = NoteIndexRouteImport.update({
   id: '/note/',
   path: '/note/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
@@ -57,18 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/note/$documentName': typeof NoteDocumentNameRoute
   '/auth/': typeof AuthIndexRoute
-  '/dashboard/': typeof DashboardIndexRoute
   '/note/': typeof NoteIndexRoute
-  '/sort/': typeof SortIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/note/$documentName': typeof NoteDocumentNameRoute
   '/auth': typeof AuthIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/note': typeof NoteIndexRoute
-  '/sort': typeof SortIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -76,38 +60,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/note/$documentName': typeof NoteDocumentNameRoute
   '/auth/': typeof AuthIndexRoute
-  '/dashboard/': typeof DashboardIndexRoute
   '/note/': typeof NoteIndexRoute
-  '/sort/': typeof SortIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/note/$documentName'
-    | '/auth/'
-    | '/dashboard/'
-    | '/note/'
-    | '/sort/'
-    | '/api/auth/$'
+  fullPaths: '/' | '/note/$documentName' | '/auth/' | '/note/' | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/note/$documentName'
-    | '/auth'
-    | '/dashboard'
-    | '/note'
-    | '/sort'
-    | '/api/auth/$'
+  to: '/' | '/note/$documentName' | '/auth' | '/note' | '/api/auth/$'
   id:
     | '__root__'
     | '/'
     | '/note/$documentName'
     | '/auth/'
-    | '/dashboard/'
     | '/note/'
-    | '/sort/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -115,9 +81,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   NoteDocumentNameRoute: typeof NoteDocumentNameRoute
   AuthIndexRoute: typeof AuthIndexRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
   NoteIndexRoute: typeof NoteIndexRoute
-  SortIndexRoute: typeof SortIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -130,25 +94,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sort/': {
-      id: '/sort/'
-      path: '/sort'
-      fullPath: '/sort/'
-      preLoaderRoute: typeof SortIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/note/': {
       id: '/note/'
       path: '/note'
       fullPath: '/note/'
       preLoaderRoute: typeof NoteIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/': {
@@ -179,9 +129,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   NoteDocumentNameRoute: NoteDocumentNameRoute,
   AuthIndexRoute: AuthIndexRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
   NoteIndexRoute: NoteIndexRoute,
-  SortIndexRoute: SortIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
