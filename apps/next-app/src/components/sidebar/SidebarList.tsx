@@ -7,13 +7,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import {
-  Link,
-  useMatch,
-  useNavigate,
-  useParams,
-  useRouter,
-} from "@tanstack/react-router";
+import { Link, useMatch, useNavigate, useRouter } from "@tanstack/react-router";
 import { Trash2 } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -103,7 +97,6 @@ function SidebarList() {
 
     if (documentName === documentId) {
       if (window.history.length > 2) {
-        // TODO: To test this
         router.history.back();
       } else {
         const isFirstItem =
@@ -115,7 +108,6 @@ function SidebarList() {
               documentName: data?.pages[0].documents[1].documentId,
             },
           });
-          // router.push(`/note/${data?.pages[0].documents[1].documentId}`);
         } else {
           navigate({
             to: "/note/$documentName",
@@ -123,7 +115,6 @@ function SidebarList() {
               documentName: data?.pages[0]?.documents[0]?.documentId ?? "",
             },
           });
-          // router.push(`/note/${data?.pages[0].documents[0].documentId}`);
         }
         // TODO: Add a fallback id guard so when user deletes all note, user doesn't get a 404
       }
