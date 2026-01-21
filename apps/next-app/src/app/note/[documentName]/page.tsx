@@ -41,15 +41,7 @@ export default async function Page({
     .from(documentTable)
     .where(eq(documentTable.id, documentName))
     .limit(1);
-  console.log(
-    documentDetail.ownerId === session.user.id ||
-      documentDetail.documentAccessType === "public",
-  );
-  console.log(
-    documentDetail.ownerId,
-    session.user.id,
-    documentDetail.documentAccessType,
-  );
+
   return (
     <>
       <div className="flex items-center justify-between mx-8">
