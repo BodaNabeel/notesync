@@ -58,47 +58,44 @@ const hocuspocus = new Hocuspocus({
       .limit(1);
 
     if (createDocument === "true") {
-      if (existingDoc && (existingDoc.ownerId !== userId || existingDoc.documentAccessType === "public")) {
+      console.log(existingDoc)
+      if (existingDoc) {
         throw new Error("Access denied. Document already exists.");
-      }
-
-      if (!existingDoc) {
-        await db.insert(documentTable).values({
-          id: documentName,
-          ownerId: userId
-        });
-      }
-
-      return {
-        document: existingDoc ? null : null
+      } else {
+        await db.insert(documentTable).values({ id: documentName, ownerId: userId }).onConflictDoNothing();
+        return {
+          document: null
+        }
       }
     } else {
 
-      if (!existingDoc || (existingDoc.ownerId !== userId || existingDoc.documentAccessType !== "public")) {
+      if (!existingDoc) {
         throw new Error("Access denied. You do not have permission to access this resource.");
       }
 
+      if (existingDoc.ownerId === userId || existingDoc.documentAccessType === "public") {
+        if (existingDoc.documentEditMode === "viewer") {
+          connectionConfig.readOnly = true
 
-      if (existingDoc.ownerId !== userId && existingDoc.documentEditMode === "viewer") {
-        connectionConfig.readOnly = true
-        context.awareness = {
-          user: {
-            readOnly: true,
-          },
+          context.awareness = {
+            user: {
+              readOnly: false,
+            },
+          }
         }
+        if (existingDoc.documentEditMode === "editor") {
+          context.awareness = {
+            user: {
+              readOnly: true,
+            },
+          }
+        }
+        return {
+          document: existingDoc.document
+        };
       } else {
-        context.awareness = {
-          user: {
-            readOnly: false,
-          },
-        }
+        throw new Error("Access denied. Document already exists.");
       }
-
-
-      // connectionConfig.readOnly = true;
-      return {
-        document: existingDoc.document
-      };
     }
   },
 });
