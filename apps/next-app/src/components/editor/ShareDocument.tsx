@@ -26,7 +26,7 @@ import { Link2, Link2Icon, Share2, ShieldCheck } from "lucide-react";
 import { useState, useTransition } from "react";
 import { CopyLinkButton } from "./CopyLinkButton";
 // import * as motion from "motion/react-client"
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, easeIn, easeOut, motion } from "motion/react";
 
 interface DocumentDetail {
   documentAccessType: "public" | "private";
@@ -34,9 +34,9 @@ interface DocumentDetail {
 }
 
 const actionVariants = {
-  initial: { opacity: 0, y: 6 },
+  initial: { opacity: 0, y: 50, easeIn },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -6 },
+  exit: { opacity: 0, y: -50, easeOut },
 };
 
 export default function ShareDocument({
@@ -143,7 +143,7 @@ export default function ShareDocument({
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                transition={{ duration: 0.18, ease: "easeOut" }}
+                transition={{ duration: 0.5 }}
               >
                 <Button
                   size="lg"
@@ -177,7 +177,7 @@ export default function ShareDocument({
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                transition={{ duration: 0.5 }}
                 className="space-y-3"
               >
                 <CopyLinkButton isPending={isPending} />

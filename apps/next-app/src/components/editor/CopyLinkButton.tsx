@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Check, Copy } from "lucide-react";
 import * as motion from "motion/react-client";
+import { useState } from "react";
 
 export function CopyLinkButton({
   isPending: isPendingParent,
