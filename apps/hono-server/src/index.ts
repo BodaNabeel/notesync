@@ -7,7 +7,6 @@ import { Hono } from "hono";
 import * as Y from "yjs";
 import { db } from "./db.ts";
 import validateToken from "./libs/ValidateToken.ts";
-import { error } from "console";
 
 
 const hocuspocus = new Hocuspocus({
@@ -34,7 +33,7 @@ const hocuspocus = new Hocuspocus({
           document: update, lastModified: new Date(), title: title as string
         }).where(eq(documentTable.id, documentName))
     } catch (err) {
-      console.error(`[ERROR]: Error storing document ${error}`)
+      console.error(`[ERROR]: Error storing document ${err}`)
     }
 
   },
@@ -58,7 +57,7 @@ const hocuspocus = new Hocuspocus({
       .limit(1);
 
     if (createDocument === "true") {
-      console.log(existingDoc)
+      console.log(createDocument)
       if (existingDoc) {
         throw new Error("Access denied. Document already exists.");
       } else {

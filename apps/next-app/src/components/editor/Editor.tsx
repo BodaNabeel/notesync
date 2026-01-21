@@ -62,8 +62,7 @@ export default function Editor({
       name: documentName,
       document: doc,
       token,
-
-      onConnect() {
+      onAuthenticated() {
         setEditorState("connected");
         if (createDocument === "true") {
           queryClient.setQueryData(
@@ -103,14 +102,30 @@ export default function Editor({
           router.replace(`/note/${documentName}`);
         }
       },
+      // onConnect() {
+      //   // if (editorState === "loading" || editorState === "error") return;
+      //   // console.log(editor, editorState);
+
+      // },
       onAuthenticationFailed: () => {
         setEditorState("error");
+        if (createDocument === "true") {
+          router.replace(`/note/${documentName}`);
+        }
       },
       onClose: ({}) => {},
     });
 
     return hocuspocusProvider;
-  }, [router, token, documentName, doc, createDocument, queryClient]);
+  }, [
+    router,
+    token,
+    documentName,
+    doc,
+    createDocument,
+    queryClient,
+    editorState,
+  ]);
 
   useEffect(() => {
     return () => {
