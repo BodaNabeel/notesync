@@ -188,6 +188,25 @@ export declare const documentTable: import("drizzle-orm/pg-core").PgTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        documentEditMode: import("drizzle-orm/pg-core").PgColumn<{
+            name: "document_edit_mode";
+            tableName: "document_table";
+            dataType: "string";
+            columnType: "PgText";
+            data: "editor" | "viewer" | null;
+            driverParam: string;
+            notNull: false;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            $type: "editor" | "viewer" | null;
+        }>;
         document: import("drizzle-orm/pg-core").PgColumn<{
             name: "document";
             tableName: "document_table";

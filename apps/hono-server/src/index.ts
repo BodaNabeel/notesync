@@ -2,12 +2,11 @@ import { Database } from "@hocuspocus/extension-database";
 import { Hocuspocus } from "@hocuspocus/server";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
-import { and, documentTable, eq } from "@note/db";
+import { and, documentTable, eq, or } from "@note/db";
 import { Hono } from "hono";
 import * as Y from "yjs";
 import { db } from "./db.ts";
 import validateToken from "./libs/ValidateToken.ts";
-import { error } from "console";
 
 
 const hocuspocus = new Hocuspocus({
@@ -34,11 +33,11 @@ const hocuspocus = new Hocuspocus({
           document: update, lastModified: new Date(), title: title as string
         }).where(eq(documentTable.id, documentName))
     } catch (err) {
-      console.error(`[ERROR]: Error storing document ${error}`)
+      console.error(`[ERROR]: Error storing document ${err}`)
     }
 
   },
-  async onAuthenticate({ documentName, token, requestParameters }) {
+  async onAuthenticate({ documentName, token, requestParameters, connectionConfig, context }) {
     if (!token) {
       throw new Error("Token is required to proceed further.");
     }
@@ -51,35 +50,53 @@ const hocuspocus = new Hocuspocus({
       throw new Error("Access denied. You do not have permission to access this resource.");
     }
 
-    if (createDocument === "true") {
-      await db.insert(documentTable).values({
-        id: documentName, ownerId: userId
-      }).onConflictDoNothing()
-      return {
-        document: null
-      }
-    }
-
-    const [document] = await db
-      .select({ document: documentTable.document, title: documentTable.title })
+    const [existingDoc] = await db
+      .select({ ownerId: documentTable.ownerId, documentAccessType: documentTable.documentAccessType, documentEditMode: documentTable.documentEditMode, document: documentTable.document })
       .from(documentTable)
-      .where(
-        and(
-          eq(documentTable.id, documentName),
-          eq(documentTable.ownerId, userId)
-        )
-      )
+      .where(eq(documentTable.id, documentName))
       .limit(1);
 
-    if (!document) {
-      throw new Error("Access denied. You do not have permission to access this resource.");
-    }
+    if (createDocument === "true") {
+      console.log(createDocument)
+      if (existingDoc) {
+        throw new Error("Access denied. Document already exists.");
+      } else {
+        await db.insert(documentTable).values({ id: documentName, ownerId: userId }).onConflictDoNothing();
+        return {
+          document: null
+        }
+      }
+    } else {
 
-    return {
-      document: document.document,
-      documentTitle: "hello",
-    };
-  }
+      if (!existingDoc) {
+        throw new Error("Access denied. You do not have permission to access this resource.");
+      }
+
+      if (existingDoc.ownerId === userId || existingDoc.documentAccessType === "public") {
+        if (existingDoc.documentEditMode === "viewer") {
+          connectionConfig.readOnly = true
+
+          context.awareness = {
+            user: {
+              readOnly: false,
+            },
+          }
+        }
+        if (existingDoc.documentEditMode === "editor") {
+          context.awareness = {
+            user: {
+              readOnly: true,
+            },
+          }
+        }
+        return {
+          document: existingDoc.document
+        };
+      } else {
+        throw new Error("Access denied. Document already exists.");
+      }
+    }
+  },
 });
 
 const app = new Hono();

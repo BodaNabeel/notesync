@@ -57,6 +57,34 @@
       "when": 1768391075041,
       "tag": "0007_huge_emma_frost",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1768490479577,
+      "tag": "0008_vengeful_obadiah_stane",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1768490919602,
+      "tag": "0009_lean_firestar",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1768490929430,
+      "tag": "0010_ordinary_wallflower",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1768491207931,
+      "tag": "0011_orange_silk_fever",
+      "breakpoints": true
     }
   ]
 }
