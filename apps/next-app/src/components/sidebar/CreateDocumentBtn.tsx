@@ -1,12 +1,20 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "../ui/button";
 
 export default function CreateDocumentBtn() {
-  const router = useRouter();
-  const documentCreation = () => {
-    router.push(`/note/${crypto.randomUUID()}?new=true`);
+  const navigate = useNavigate();
+  const handleCreateDocument = () => {
+    navigate({
+      to: "/note/$documentName",
+      params: {
+        documentName: crypto.randomUUID(),
+      },
+      search: {
+        new: true,
+      },
+    });
   };
-  return <Button onClick={documentCreation}>Create Document</Button>;
+  return <Button onClick={handleCreateDocument}>Create Document</Button>;
 }

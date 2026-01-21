@@ -9,31 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './app/__root'
+import { Route as NoteRouteRouteImport } from './app/note/route'
 import { Route as IndexRouteImport } from './app/index'
 import { Route as NoteIndexRouteImport } from './app/note/index'
 import { Route as AuthIndexRouteImport } from './app/auth/index'
-import { Route as NoteDocumentNameRouteImport } from './app/note/$documentName'
+import { Route as NoteDocumentNameIndexRouteImport } from './app/note/$documentName/index'
 import { Route as ApiAuthSplatRouteImport } from './app/api/auth/$'
 
+const NoteRouteRoute = NoteRouteRouteImport.update({
+  id: '/note',
+  path: '/note',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NoteIndexRoute = NoteIndexRouteImport.update({
-  id: '/note/',
-  path: '/note/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => NoteRouteRoute,
 } as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
   path: '/auth/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NoteDocumentNameRoute = NoteDocumentNameRouteImport.update({
-  id: '/note/$documentName',
-  path: '/note/$documentName',
-  getParentRoute: () => rootRouteImport,
+const NoteDocumentNameIndexRoute = NoteDocumentNameIndexRouteImport.update({
+  id: '/$documentName/',
+  path: '/$documentName/',
+  getParentRoute: () => NoteRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -43,50 +49,65 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/note/$documentName': typeof NoteDocumentNameRoute
+  '/note': typeof NoteRouteRouteWithChildren
   '/auth/': typeof AuthIndexRoute
   '/note/': typeof NoteIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/note/$documentName/': typeof NoteDocumentNameIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/note/$documentName': typeof NoteDocumentNameRoute
   '/auth': typeof AuthIndexRoute
   '/note': typeof NoteIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/note/$documentName': typeof NoteDocumentNameIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/note/$documentName': typeof NoteDocumentNameRoute
+  '/note': typeof NoteRouteRouteWithChildren
   '/auth/': typeof AuthIndexRoute
   '/note/': typeof NoteIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/note/$documentName/': typeof NoteDocumentNameIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/note/$documentName' | '/auth/' | '/note/' | '/api/auth/$'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/note/$documentName' | '/auth' | '/note' | '/api/auth/$'
-  id:
-    | '__root__'
+  fullPaths:
     | '/'
-    | '/note/$documentName'
+    | '/note'
     | '/auth/'
     | '/note/'
     | '/api/auth/$'
+    | '/note/$documentName/'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/auth' | '/note' | '/api/auth/$' | '/note/$documentName'
+  id:
+    | '__root__'
+    | '/'
+    | '/note'
+    | '/auth/'
+    | '/note/'
+    | '/api/auth/$'
+    | '/note/$documentName/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  NoteDocumentNameRoute: typeof NoteDocumentNameRoute
+  NoteRouteRoute: typeof NoteRouteRouteWithChildren
   AuthIndexRoute: typeof AuthIndexRoute
-  NoteIndexRoute: typeof NoteIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/note': {
+      id: '/note'
+      path: '/note'
+      fullPath: '/note'
+      preLoaderRoute: typeof NoteRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -96,10 +117,10 @@ declare module '@tanstack/react-router' {
     }
     '/note/': {
       id: '/note/'
-      path: '/note'
+      path: '/'
       fullPath: '/note/'
       preLoaderRoute: typeof NoteIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof NoteRouteRoute
     }
     '/auth/': {
       id: '/auth/'
@@ -108,12 +129,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/note/$documentName': {
-      id: '/note/$documentName'
-      path: '/note/$documentName'
-      fullPath: '/note/$documentName'
-      preLoaderRoute: typeof NoteDocumentNameRouteImport
-      parentRoute: typeof rootRouteImport
+    '/note/$documentName/': {
+      id: '/note/$documentName/'
+      path: '/$documentName'
+      fullPath: '/note/$documentName/'
+      preLoaderRoute: typeof NoteDocumentNameIndexRouteImport
+      parentRoute: typeof NoteRouteRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -125,11 +146,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface NoteRouteRouteChildren {
+  NoteIndexRoute: typeof NoteIndexRoute
+  NoteDocumentNameIndexRoute: typeof NoteDocumentNameIndexRoute
+}
+
+const NoteRouteRouteChildren: NoteRouteRouteChildren = {
+  NoteIndexRoute: NoteIndexRoute,
+  NoteDocumentNameIndexRoute: NoteDocumentNameIndexRoute,
+}
+
+const NoteRouteRouteWithChildren = NoteRouteRoute._addFileChildren(
+  NoteRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  NoteDocumentNameRoute: NoteDocumentNameRoute,
+  NoteRouteRoute: NoteRouteRouteWithChildren,
   AuthIndexRoute: AuthIndexRoute,
-  NoteIndexRoute: NoteIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

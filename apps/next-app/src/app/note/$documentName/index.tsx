@@ -5,7 +5,7 @@ import z from "zod";
 const searchSchema = z.object({
   new: z.boolean().optional(),
 });
-export const Route = createFileRoute("/note/")({
+export const Route = createFileRoute("/note/$documentName/")({
   component: RouteComponent,
   validateSearch: searchSchema,
   server: {
@@ -14,5 +14,5 @@ export const Route = createFileRoute("/note/")({
 });
 
 function RouteComponent() {
-  return <div>Hello </div>;
+  return <div>Hello /note/$documentName!</div>;
 }

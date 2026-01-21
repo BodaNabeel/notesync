@@ -1,0 +1,22 @@
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import QueryClientWrapper from "@/Provider/tanstack-query";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/note")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  return (
+    <QueryClientWrapper>
+      <SidebarProvider>
+        <AppSidebar />
+        <main className="w-full ">
+          <SidebarTrigger />
+          <Outlet />
+        </main>
+      </SidebarProvider>
+    </QueryClientWrapper>
+  );
+}

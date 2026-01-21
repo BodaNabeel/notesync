@@ -1,4 +1,5 @@
 "use client";
+import { deleteDocument, getDocuments } from "@/action/document-action";
 import { cn } from "@/lib/utils";
 import {
   InfiniteData,
@@ -6,26 +7,37 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import {
+  Link,
+  useMatch,
+  useNavigate,
+  useParams,
+  useRouter,
+} from "@tanstack/react-router";
 import { Trash2 } from "lucide-react";
-import Link from "next/link";
-import { useParams, usePathname, useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import SidebarListSkeleton from "./SidebarListSkeleton";
-import { deleteDocument, getDocuments } from "@/action/document-action";
 
 const LIMIT_PER_PAGE = 30;
 function SidebarList() {
   const queryClient = useQueryClient();
-  const pathname = usePathname();
+
+  const documentMatch = useMatch({
+    from: "/note/$documentName/",
+    shouldThrow: false,
+  });
+  const documentName = documentMatch?.params.documentName;
+
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
-  const { documentName } = useParams<{ documentName: string }>();
+  const navigate = useNavigate();
   const router = useRouter();
   const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: ["document-list"],
-      queryFn: ({ pageParam }) => getDocuments(pageParam, LIMIT_PER_PAGE),
+      queryFn: ({ pageParam }) =>
+        getDocuments({ data: { page: pageParam, limit: LIMIT_PER_PAGE } }),
       initialPageParam: 1,
       getNextPageParam: (lastPage) => {
         return lastPage.nextCursor;
@@ -33,7 +45,8 @@ function SidebarList() {
     });
 
   const deleteThreadMutation = useMutation({
-    mutationFn: (documentId: string) => deleteDocument(documentId),
+    mutationFn: (documentId: string) =>
+      deleteDocument({ data: { documentId } }),
 
     onMutate: async (documentId, context) => {
       await context.client.cancelQueries({ queryKey: ["document-list"] });
@@ -50,18 +63,18 @@ function SidebarList() {
             }[];
             total: number;
             nextCursor: number | null;
-          }>
+          }>,
         ) => {
           return {
             ...old,
             pages: old.pages.map((page) => ({
               ...page,
               documents: page.documents.filter(
-                (document) => document.documentId !== documentId
+                (document) => document.documentId !== documentId,
               ),
             })),
           };
-        }
+        },
       );
 
       return { previousList };
@@ -90,14 +103,27 @@ function SidebarList() {
 
     if (documentName === documentId) {
       if (window.history.length > 2) {
-        router.back();
+        // TODO: To test this
+        router.history.back();
       } else {
         const isFirstItem =
           data?.pages[0].documents[0].documentId === documentId;
         if (isFirstItem) {
-          router.push(`/note/${data?.pages[0].documents[1].documentId}`);
+          navigate({
+            to: "/note/$documentName",
+            params: {
+              documentName: data?.pages[0].documents[1].documentId,
+            },
+          });
+          // router.push(`/note/${data?.pages[0].documents[1].documentId}`);
         } else {
-          router.push(`/note/${data?.pages[0].documents[0].documentId}`);
+          navigate({
+            to: "/note/$documentName",
+            params: {
+              documentName: data?.pages[0]?.documents[0]?.documentId ?? "",
+            },
+          });
+          // router.push(`/note/${data?.pages[0].documents[0].documentId}`);
         }
         // TODO: Add a fallback id guard so when user deletes all note, user doesn't get a 404
       }
@@ -113,7 +139,7 @@ function SidebarList() {
               <div
                 className={cn(
                   `text-nowrap relative px-1.5 py-1 rounded-md w-full transition-all hover:bg-accent/80`,
-                  pathname.includes(data.documentId) && "bg-accent/40"
+                  documentName === data.documentId && "bg-accent/40",
                 )}
                 key={data.documentId}
                 onMouseEnter={() => setHoveredId(data.documentId)}
@@ -122,9 +148,12 @@ function SidebarList() {
                 <Link
                   className={cn(
                     "block truncate",
-                    hoveredId === data.documentId ? "w-[80%]" : "w-full"
+                    hoveredId === data.documentId ? "w-[80%]" : "w-full",
                   )}
-                  href={`/note/${data.documentId}`}
+                  to="/note/$documentName"
+                  params={{
+                    documentName: data.documentId,
+                  }}
                 >
                   {data.title && data.title.length > 0
                     ? data.title
