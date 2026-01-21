@@ -34,9 +34,9 @@ interface DocumentDetail {
 }
 
 const actionVariants = {
-  initial: { opacity: 0, y: 50, easeIn },
+  initial: { opacity: 0, y: 0, easeIn },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -50, easeOut },
+  exit: { opacity: 0, y: -80, easeOut },
 };
 
 export default function ShareDocument({
