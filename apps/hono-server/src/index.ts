@@ -51,58 +51,56 @@ const hocuspocus = new Hocuspocus({
       throw new Error("Access denied. You do not have permission to access this resource.");
     }
 
-    if (createDocument === "true") {
-      await db.insert(documentTable).values({
-        id: documentName, ownerId: userId
-      }).onConflictDoNothing()
-      return {
-        document: null
-      }
-    }
-
-    const [document] = await db
-      .select({
-        document: documentTable.document,
-        ownerId: documentTable.ownerId,
-        documentEditMode: documentTable.documentEditMode,
-      })
+    const [existingDoc] = await db
+      .select({ ownerId: documentTable.ownerId, documentAccessType: documentTable.documentAccessType, documentEditMode: documentTable.documentEditMode, document: documentTable.document })
       .from(documentTable)
-      .where(
-        and(
-          eq(documentTable.id, documentName),
-          or(
-            eq(documentTable.ownerId, userId),
-            eq(documentTable.documentAccessType, "public")
-          )
-        )
-      )
+      .where(eq(documentTable.id, documentName))
       .limit(1);
-    if (!document) {
-      throw new Error("Access denied. You do not have permission to access this resource.");
-    }
 
+    if (createDocument === "true") {
+      if (existingDoc && (existingDoc.ownerId !== userId || existingDoc.documentAccessType === "public")) {
+        throw new Error("Access denied. Document already exists.");
+      }
 
-    if (document.ownerId !== userId && document.documentEditMode === "viewer") {
-      connectionConfig.readOnly = true
-      context.awareness = {
-        user: {
-          readOnly: true,
-        },
+      if (!existingDoc) {
+        await db.insert(documentTable).values({
+          id: documentName,
+          ownerId: userId
+        });
+      }
+
+      return {
+        document: existingDoc ? null : null
       }
     } else {
-      context.awareness = {
-        user: {
-          readOnly: false,
-        },
+
+      if (!existingDoc || (existingDoc.ownerId !== userId || existingDoc.documentAccessType !== "public")) {
+        throw new Error("Access denied. You do not have permission to access this resource.");
       }
+
+
+      if (existingDoc.ownerId !== userId && existingDoc.documentEditMode === "viewer") {
+        connectionConfig.readOnly = true
+        context.awareness = {
+          user: {
+            readOnly: true,
+          },
+        }
+      } else {
+        context.awareness = {
+          user: {
+            readOnly: false,
+          },
+        }
+      }
+
+
+      // connectionConfig.readOnly = true;
+      return {
+        document: existingDoc.document
+      };
     }
-
-
-    // connectionConfig.readOnly = true;
-    return {
-      document: document.document
-    };
-  }
+  },
 });
 
 const app = new Hono();
