@@ -1,24 +1,15 @@
 import { getSession } from "@/action/getSession";
 import { authMiddleware } from "@/app/middleware/auth";
 import Editor from "@/components/editor/Editor";
-import ShareDocument from "@/components/editor/ShareDocument";
 import { db } from "@/database/drizzle";
 import { documentTable, eq } from "@note/db";
-import {
-  createFileRoute,
-  redirect,
-  notFound,
-  ClientOnly,
-} from "@tanstack/react-router";
+import { ClientOnly, createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import z from "zod";
 
 const searchSchema = z.object({
   new: z.boolean().optional(),
 });
-
-const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const getCurrentDocument = createServerFn()
   .inputValidator((data: { documentName: string }) => data)
@@ -42,30 +33,24 @@ export const Route = createFileRoute("/note/$documentName/")({
   server: {
     middleware: [authMiddleware],
   },
-  beforeLoad: ({ params }) => {
-    if (!uuidRegex.test(params.documentName)) {
-      throw notFound();
-    }
-  },
   loader: async ({ params }) => {
     const session = await getSession();
 
-    if (!session) {
-      throw redirect({ to: "/auth" });
-    }
+    try {
+      const documentDetail = await getCurrentDocument({
+        data: { documentName: params.documentName },
+      });
+      if (!documentDetail) {
+        throw notFound();
+      }
 
-    const documentDetail = await getCurrentDocument({
-      data: { documentName: params.documentName },
-    });
-
-    if (!documentDetail) {
+      return {
+        documentDetail,
+        session: session!,
+      };
+    } catch {
       throw notFound();
     }
-
-    return {
-      documentDetail,
-      session,
-    };
   },
   // Add this to show a pending state during navigation
   pendingComponent: () => (
