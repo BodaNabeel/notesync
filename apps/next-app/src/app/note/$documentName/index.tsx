@@ -14,5 +14,6 @@ export const Route = createFileRoute("/note/$documentName/")({
 });
 
 function RouteComponent() {
-  return <div>Hello /note/$documentName!</div>;
+  const { documentName } = Route.useParams();
+  return <div>Hello {documentName}</div>;
 }
