@@ -1,0 +1,48 @@
+// import { Geist, Geist_Mono } from "next/font/google";
+import { AuthProvider } from "@/hooks/use-auth";
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  Scripts,
+} from "@tanstack/react-router";
+
+import appCss from "@/styles/app.css?url";
+
+export const Route = createRootRoute({
+  head: () => ({
+    meta: [
+      { charSet: "utf-8" },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
+      },
+      { title: "TanStack Start Starter" },
+    ],
+    links: [
+      {
+        rel: "stylesheet",
+        href: appCss,
+      },
+    ],
+  }),
+  component: RootLayout,
+});
+
+function RootLayout() {
+  return (
+    <html lang="en">
+      <html lang="en">
+        <head>
+          <HeadContent />
+        </head>
+        <body>
+          <AuthProvider>
+            <Outlet />
+            <Scripts />
+          </AuthProvider>
+        </body>
+      </html>
+    </html>
+  );
+}

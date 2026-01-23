@@ -1,21 +1,19 @@
-"use client";
-
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { UserDetails } from "@/lib/types";
+import { getDocumentTitle } from "@/utils/documents/title.server";
 import "@blocknote/core/fonts/inter.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { InfiniteData, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import * as Y from "yjs";
 import EditorSkeleton from "./EditorSkeleton";
 import EditorTitle from "./EditorTitle";
-import { fetchDocumentTitle } from "@/action/document-action";
 
 type EditorState = "loading" | "connected" | "error";
 
@@ -45,35 +43,42 @@ export default function Editor({
     () =>
       collaboratorColors[Math.floor(Math.random() * collaboratorColors.length)],
   );
+
   const { token, loading: authLoading } = useAuth();
   const [editorState, setEditorState] = useState<EditorState>("loading");
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const createDocument = searchParams.get("new");
-  const queryClient = useQueryClient();
 
+  const navigate = useNavigate();
+  const search = useSearch({ strict: false });
+  const createDocument = search?.new;
+
+  const queryClient = useQueryClient();
   const doc = useMemo(() => new Y.Doc(), []);
-  const provider = useMemo(() => {
-    if (!token) return null;
+  const [provider, setProvider] = useState<HocuspocusProvider | null>(null);
+
+  useEffect(() => {
+    console.log("trigger");
+    if (!token) {
+      return;
+    }
+
     const hocuspocusProvider = new HocuspocusProvider({
-      url: `${process.env.NEXT_PUBLIC_HONO_SERVER_URL!}${
-        createDocument === "true" ? "?new=true" : ""
+      url: `${import.meta.env.VITE_HONO_SERVER_URL}${
+        createDocument ? "?new=true" : ""
       }`,
       name: documentName,
       document: doc,
       token,
       onAuthenticated() {
         setEditorState("connected");
-        if (createDocument === "true") {
+        setProvider(hocuspocusProvider);
+
+        if (createDocument) {
           queryClient.setQueryData(
             ["document-list"],
             (
               old:
                 | InfiniteData<{
-                    documents: {
-                      title: string;
-                      documentId: string;
-                    }[];
+                    documents: { title: string; documentId: string }[];
                     total: number;
                     nextCursor: number | null;
                   }>
@@ -88,94 +93,81 @@ export default function Editor({
 
               return {
                 ...old,
-                pages: old.pages.map((page, index) => {
-                  if (index !== 0) return page;
-
-                  return {
-                    ...page,
-                    documents: [newDocument, ...page.documents],
-                  };
-                }),
+                pages: old.pages.map((page, i) =>
+                  i === 0
+                    ? { ...page, documents: [newDocument, ...page.documents] }
+                    : page,
+                ),
               };
             },
           );
-          router.replace(`/note/${documentName}`);
+
+          navigate({
+            to: "/note/$documentName",
+            params: { documentName },
+            replace: true,
+          });
         }
       },
-      // onConnect() {
-      //   // if (editorState === "loading" || editorState === "error") return;
-      //   // console.log(editor, editorState);
-
-      // },
-      onAuthenticationFailed: () => {
+      onAuthenticationFailed() {
         setEditorState("error");
-        if (createDocument === "true") {
-          router.replace(`/note/${documentName}`);
+
+        if (createDocument) {
+          navigate({
+            to: "/note/$documentName",
+            params: { documentName },
+            replace: true,
+          });
         }
       },
-      onClose: ({}) => {},
     });
-
-    return hocuspocusProvider;
-  }, [
-    router,
-    token,
-    documentName,
-    doc,
-    createDocument,
-    queryClient,
-    editorState,
-  ]);
-
-  useEffect(() => {
     return () => {
-      provider?.destroy();
+      hocuspocusProvider.disconnect();
+      hocuspocusProvider.destroy();
     };
-  }, [provider]);
+  }, [token, documentName, doc, createDocument, queryClient, navigate]);
 
   const { data: documentTitle, isLoading: documentTitleLoading } = useQuery({
-    queryKey: [`document-title-${documentName}`],
+    queryKey: ["document-title", documentName],
     queryFn: async () => {
-      const title = await fetchDocumentTitle(documentName);
+      const title = await getDocumentTitle({
+        data: { documentName: documentName },
+      });
       return title;
     },
+    enabled: !createDocument,
   });
 
   const editor = useCreateBlockNote(
     {
-      collaboration: provider
-        ? {
-            provider,
-            fragment: doc.getXmlFragment("default"),
-            user: {
-              name: session?.user?.name,
-              color: userColor,
-            },
-            showCursorLabels: "activity",
-          }
-        : undefined,
+      collaboration: {
+        provider,
+        fragment: doc.getXmlFragment("default"),
+        user: {
+          name: session.user.name,
+          color: userColor,
+        },
+        showCursorLabels: "activity",
+      },
     },
-    [provider, doc],
+    [provider, doc, documentName],
   );
 
   const isLoading =
     authLoading || editorState === "loading" || documentTitleLoading;
 
-  if (isLoading) {
-    return <EditorSkeleton />;
-  }
+  if (isLoading) return <EditorSkeleton />;
 
   if (editorState === "error") {
     return (
       <div className="max-w-2xl mx-auto min-h-[calc(100vh-200px)] pb-80 mt-16 flex flex-col items-center justify-center">
-        <div className="bg-red-300/40 w-fit  rounded-full p-6">
+        <div className="bg-red-300/40 rounded-full p-6">
           <TriangleAlert color="red" size={40} />
         </div>
-        <div className="mt-6 *:text-center space-y-2">
+        <div className="mt-6 text-center space-y-2">
           <h1 className="text-3xl font-extrabold">Document Not Found</h1>
           <p className="text-gray-600">
-            This document doesn&apos;t exist or you don&apos;t have permission
-            to view it.
+            This document doesn’t exist or you don’t have permission to view it.
           </p>
         </div>
       </div>

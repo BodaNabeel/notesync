@@ -41,17 +41,22 @@ const hocuspocus = new Hocuspocus({
     if (!token) {
       throw new Error("Token is required to proceed further.");
     }
-
     const payload = await validateToken(token);
     const userId = payload.id as string
     const createDocument = requestParameters.get("new")
+
 
     if (!payload) {
       throw new Error("Access denied. You do not have permission to access this resource.");
     }
 
     const [existingDoc] = await db
-      .select({ ownerId: documentTable.ownerId, documentAccessType: documentTable.documentAccessType, documentEditMode: documentTable.documentEditMode, document: documentTable.document })
+      .select({
+        ownerId: documentTable.ownerId,
+        documentAccessType: documentTable.documentAccessType,
+        documentEditMode: documentTable.documentEditMode,
+        document: documentTable.document
+      })
       .from(documentTable)
       .where(eq(documentTable.id, documentName))
       .limit(1);

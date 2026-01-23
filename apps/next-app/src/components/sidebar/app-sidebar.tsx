@@ -5,8 +5,8 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import SidebarList from "./SidebarList";
 import CreateDocumentBtn from "./CreateDocumentBtn";
+import SidebarList from "./SidebarList";
 
 export function AppSidebar() {
   return (
@@ -15,6 +15,7 @@ export function AppSidebar() {
         <h1 className="text-center font-bold text-lg mb-4">
           Collaboration Notes
         </h1>
+
         <CreateDocumentBtn />
       </SidebarHeader>
       <SidebarContent>

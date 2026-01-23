@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @source "../../node_modules/@blocknote/shadcn";
@@ -98,10 +99,12 @@
   --sidebar-border: oklch(0.9305 0.0086 67.7194);
   --sidebar-ring: oklch(0.8337 0.027 71.1392);
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Playfair Display", ui-serif, Georgia, Cambria,
-    "Times New Roman", Times, serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
-    Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-serif:
+    "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times,
+    serif;
+  --font-mono:
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
   --radius: 0.5rem;
   --shadow-x: 0;
   --shadow-y: 0.25rem;
@@ -111,15 +114,20 @@
   --shadow-color: #000000;
   --shadow-2xs: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.02);
   --shadow-xs: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.02);
-  --shadow-sm: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.04),
+  --shadow-sm:
+    0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.04),
     0 1px 2px -0.9px hsl(0 0% 0% / 0.04);
-  --shadow: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.04),
+  --shadow:
+    0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.04),
     0 1px 2px -0.9px hsl(0 0% 0% / 0.04);
-  --shadow-md: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.04),
+  --shadow-md:
+    0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.04),
     0 2px 4px -0.9px hsl(0 0% 0% / 0.04);
-  --shadow-lg: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.04),
+  --shadow-lg:
+    0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.04),
     0 4px 6px -0.9px hsl(0 0% 0% / 0.04);
-  --shadow-xl: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.04),
+  --shadow-xl:
+    0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.04),
     0 8px 10px -0.9px hsl(0 0% 0% / 0.04);
   --shadow-2xl: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.1);
   --tracking-normal: 0;
@@ -160,10 +168,12 @@
   --sidebar-border: oklch(0.3937 0.0107 67.5093);
   --sidebar-ring: oklch(0.526 0.0105 78.237);
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Playfair Display", ui-serif, Georgia, Cambria,
-    "Times New Roman", Times, serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
-    Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-serif:
+    "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times,
+    serif;
+  --font-mono:
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
   --radius: 0.5rem;
   --shadow-x: 0;
   --shadow-y: 0.25rem;
@@ -173,15 +183,20 @@
   --shadow-color: #000000;
   --shadow-2xs: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.17);
   --shadow-xs: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.17);
-  --shadow-sm: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.35),
+  --shadow-sm:
+    0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.35),
     0 1px 2px -0.9px hsl(0 0% 0% / 0.35);
-  --shadow: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.35),
+  --shadow:
+    0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.35),
     0 1px 2px -0.9px hsl(0 0% 0% / 0.35);
-  --shadow-md: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.35),
+  --shadow-md:
+    0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.35),
     0 2px 4px -0.9px hsl(0 0% 0% / 0.35);
-  --shadow-lg: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.35),
+  --shadow-lg:
+    0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.35),
     0 4px 6px -0.9px hsl(0 0% 0% / 0.35);
-  --shadow-xl: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.35),
+  --shadow-xl:
+    0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.35),
     0 8px 10px -0.9px hsl(0 0% 0% / 0.35);
   --shadow-2xl: 0 0.25rem 0.8rem 0.1rem hsl(0 0% 0% / 0.88);
 }

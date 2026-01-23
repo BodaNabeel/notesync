@@ -2,7 +2,7 @@ import { db } from "@/database/drizzle";
 import { account, jwks, session, user, verification } from "@note/db";
 import { betterAuth } from "better-auth";
 import { jwt } from "better-auth/plugins"
-import { jwtClient } from "better-auth/client/plugins"
+import { tanstackStartCookies } from "better-auth/tanstack-start";
 
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
@@ -20,6 +20,7 @@ export const auth = betterAuth({
         }
     },
     plugins: [
-        jwt()
+        jwt(),
+        tanstackStartCookies()
     ]
 });

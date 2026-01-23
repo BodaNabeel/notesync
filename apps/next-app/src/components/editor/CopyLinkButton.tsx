@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
 import * as motion from "motion/react-client";

@@ -4,6 +4,6 @@ node_modules
 
 
 # NEXT-APP
-.next
 .vscode
-.next
+.tanstack
+dist

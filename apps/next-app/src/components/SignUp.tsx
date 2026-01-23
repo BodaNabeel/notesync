@@ -1,12 +1,11 @@
-"use client";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "./ui/button";
-import { useSearchParams } from "next/navigation";
 
-export default function SignUp() {
-  const searchParams = useSearchParams();
-  const documentName = searchParams.get("documentName");
-  console.log(documentName);
+export default function SignUp({
+  documentName,
+}: {
+  documentName: string | undefined;
+}) {
   const handleSignIn = async () => {
     await authClient.signIn.social({
       provider: "google",
@@ -20,12 +19,6 @@ export default function SignUp() {
         className="text-lg  py-6 px-10 flex space-x-5 "
         onClick={handleSignIn}
       >
-        {/* <Image
-          width={20}
-          height={20}
-          src="/google-icon.svg"
-          alt="google-icon"
-        /> */}
         <p>Continue with Google</p>
       </Button>
     </main>

@@ -1,9 +1,3 @@
-"use client";
-
-import {
-  documentLinkGeneration,
-  documentLinkRevocation,
-} from "@/action/document-action";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +21,10 @@ import { useState, useTransition } from "react";
 import { CopyLinkButton } from "./CopyLinkButton";
 // import * as motion from "motion/react-client"
 import { AnimatePresence, easeIn, easeOut, motion } from "motion/react";
+import {
+  documentLinkGeneration,
+  documentLinkRevocation,
+} from "@/utils/documents/share.server";
 
 interface DocumentDetail {
   documentAccessType: "public" | "private";
@@ -60,12 +58,10 @@ export default function ShareDocument({
     useState<DocumentDetail>(documentDetail);
 
   const handleLinkGeneration = (mode: "editor" | "viewer") =>
-    documentLinkGeneration({
-      documentName,
-      documentEditMode: mode,
-    });
+    documentLinkGeneration({ data: { documentEditMode: mode, documentName } });
 
-  const handleLinkRevocation = () => documentLinkRevocation(documentName);
+  const handleLinkRevocation = () =>
+    documentLinkRevocation({ data: { documentName } });
 
   return (
     <Dialog>
