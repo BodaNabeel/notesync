@@ -1,5 +1,6 @@
 import { authMiddleware } from "@/app/middleware/-auth";
 import Editor from "@/components/editor/Editor";
+import EditorSkeleton from "@/components/editor/EditorSkeleton";
 import ShareDocument from "@/components/editor/ShareDocument";
 import { db } from "@/database/drizzle";
 import { getSession } from "@/utils/session.server";
@@ -50,14 +51,9 @@ export const Route = createFileRoute("/note/$documentName/")({
       throw notFound();
     }
   },
-  // Add this to show a pending state during navigation
   pendingComponent: () => (
-    <div className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80 mt-8">
-      <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-        <div className="h-4 bg-gray-200 rounded"></div>
-        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-      </div>
+    <div className="mt-20">
+      <EditorSkeleton />,
     </div>
   ),
 });
@@ -83,7 +79,7 @@ function RouteComponent() {
         )}
       </div>
 
-      <ClientOnly fallback={<p>Running</p>}>
+      <ClientOnly fallback={<EditorSkeleton />}>
         <Editor
           key={documentName}
           editable={

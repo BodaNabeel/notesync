@@ -139,7 +139,7 @@ function SidebarList() {
                 onMouseLeave={() => setHoveredId(null)}
               >
                 <Link
-                  // preload="intent"
+                  preload="intent"
                   className={cn(
                     "block truncate",
                     hoveredId === data.documentId ? "w-[80%]" : "w-full",
