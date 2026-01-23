@@ -25,7 +25,6 @@ const getCurrentDocument = createServerFn()
       .from(documentTable)
       .where(eq(documentTable.id, data.documentName))
       .limit(1);
-
     return document;
   });
 
