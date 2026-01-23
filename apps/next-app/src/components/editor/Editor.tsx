@@ -9,12 +9,11 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import { InfiniteData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import * as Y from "yjs";
 import EditorSkeleton from "./EditorSkeleton";
 import EditorTitle from "./EditorTitle";
 import { getDocumentTitle } from "@/utils/documents/title.server";
-// import { fetchDocumentTitle } from "@/api/document"; // ❗ NOT a Next.js server action
 
 type EditorState = "loading" | "connected" | "error";
 
@@ -54,9 +53,13 @@ export default function Editor({
 
   const queryClient = useQueryClient();
   const doc = useMemo(() => new Y.Doc(), []);
+  const provider = useRef<HocuspocusProvider | null>(null);
 
-  const provider = useMemo(() => {
-    if (!token) return null;
+  useEffect(() => {
+    if (!token) {
+      provider.current = null;
+      return;
+    }
 
     const hocuspocusProvider = new HocuspocusProvider({
       url: `${import.meta.env.VITE_HONO_SERVER_URL}${
@@ -117,18 +120,22 @@ export default function Editor({
         }
       },
     });
+    provider.current = hocuspocusProvider;
 
-    return hocuspocusProvider;
+    return () => {
+      hocuspocusProvider.destroy();
+    };
   }, [token, documentName, doc, createDocument, queryClient, navigate]);
-
-  // useEffect(() => {
-  //   return () => provider?.destroy();
-  // }, [provider]);
 
   const { data: documentTitle, isLoading: documentTitleLoading } = useQuery({
     queryKey: ["document-title", documentName],
-    queryFn: async () =>
-      await getDocumentTitle({ data: { documentName: documentName } }),
+    queryFn: async () => {
+      const title = await getDocumentTitle({
+        data: { documentName: documentName },
+      });
+      return title;
+    },
+    enabled: !createDocument,
   });
 
   const editor = useCreateBlockNote(
