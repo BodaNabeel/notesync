@@ -1,4 +1,4 @@
-import { authMiddleware } from "@/app/middleware/auth";
+import { authMiddleware } from "@/app/middleware/-auth";
 import Editor from "@/components/editor/Editor";
 import ShareDocument from "@/components/editor/ShareDocument";
 import { db } from "@/database/drizzle";
@@ -41,15 +41,12 @@ export const Route = createFileRoute("/note/$documentName/")({
       const documentDetail = await getCurrentDocument({
         data: { documentName: params.documentName },
       });
-      if (!documentDetail) {
-        throw notFound();
-      }
-
       return {
         documentDetail,
         session: session!,
       };
-    } catch {
+    } catch (err) {
+      console.log(err, "error occurred");
       throw notFound();
     }
   },
@@ -74,7 +71,7 @@ function RouteComponent() {
     <>
       <div className="flex items-center justify-between mx-8">
         <div>workspace / product / vision</div>
-        {!isNew && documentDetail.ownerId === session.user.id ? (
+        {!isNew && documentDetail?.ownerId === session.user.id ? (
           <ShareDocument
             documentDetail={documentDetail}
             userName={session.user.name}
