@@ -1,6 +1,7 @@
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { UserDetails } from "@/lib/types";
+import { getDocumentTitle } from "@/utils/documents/title.server";
 import "@blocknote/core/fonts/inter.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
@@ -9,11 +10,10 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import { InfiniteData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import * as Y from "yjs";
 import EditorSkeleton from "./EditorSkeleton";
 import EditorTitle from "./EditorTitle";
-import { getDocumentTitle } from "@/utils/documents/title.server";
 
 type EditorState = "loading" | "connected" | "error";
 
@@ -53,11 +53,11 @@ export default function Editor({
 
   const queryClient = useQueryClient();
   const doc = useMemo(() => new Y.Doc(), []);
-  const provider = useRef<HocuspocusProvider | null>(null);
+  const [provider, setProvider] = useState<HocuspocusProvider | null>(null);
 
   useEffect(() => {
+    console.log("trigger");
     if (!token) {
-      provider.current = null;
       return;
     }
 
@@ -70,6 +70,7 @@ export default function Editor({
       token,
       onAuthenticated() {
         setEditorState("connected");
+        setProvider(hocuspocusProvider);
 
         if (createDocument) {
           queryClient.setQueryData(
@@ -120,8 +121,6 @@ export default function Editor({
         }
       },
     });
-    provider.current = hocuspocusProvider;
-
     return () => {
       hocuspocusProvider.disconnect();
       hocuspocusProvider.destroy();
@@ -141,19 +140,17 @@ export default function Editor({
 
   const editor = useCreateBlockNote(
     {
-      collaboration: provider
-        ? {
-            provider,
-            fragment: doc.getXmlFragment("default"),
-            user: {
-              name: session.user.name,
-              color: userColor,
-            },
-            showCursorLabels: "activity",
-          }
-        : undefined,
+      collaboration: {
+        provider,
+        fragment: doc.getXmlFragment("default"),
+        user: {
+          name: session.user.name,
+          color: userColor,
+        },
+        showCursorLabels: "activity",
+      },
     },
-    [provider, doc],
+    [provider, doc, documentName],
   );
 
   const isLoading =
