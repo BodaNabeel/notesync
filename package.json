@@ -6,10 +6,10 @@
     "db:generate": "pnpm --filter @note/db exec drizzle-kit generate",
     "db:migrate": "pnpm --filter @note/db exec drizzle-kit migrate",
     "db:push": "pnpm --filter @note/db exec drizzle-kit push",
-    "dev:app": "pnpm --filter next-app dev",
     "dev:hono": "pnpm --filter hono-server dev",
-    "build": "pnpm --filter next-app build",
-    "start": "pnpm --filter next-app start",
+    "dev:app": "pnpm --filter web-app dev",
+    "build": "pnpm --filter web-app build",
+    "start": "pnpm --filter web-app start",
     "lint": "eslint"
   },
   "devDependencies": {
