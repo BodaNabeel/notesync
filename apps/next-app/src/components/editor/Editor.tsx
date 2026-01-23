@@ -123,6 +123,7 @@ export default function Editor({
     provider.current = hocuspocusProvider;
 
     return () => {
+      hocuspocusProvider.disconnect();
       hocuspocusProvider.destroy();
     };
   }, [token, documentName, doc, createDocument, queryClient, navigate]);
