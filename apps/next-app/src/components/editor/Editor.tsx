@@ -13,6 +13,7 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import * as Y from "yjs";
 import EditorSkeleton from "./EditorSkeleton";
 import EditorTitle from "./EditorTitle";
+import { getDocumentTitle } from "@/utils/documents/title.server";
 // import { fetchDocumentTitle } from "@/api/document"; // ❗ NOT a Next.js server action
 
 type EditorState = "loading" | "connected" | "error";
@@ -126,7 +127,8 @@ export default function Editor({
 
   const { data: documentTitle, isLoading: documentTitleLoading } = useQuery({
     queryKey: ["document-title", documentName],
-    queryFn: () => "8",
+    queryFn: async () =>
+      await getDocumentTitle({ data: { documentName: documentName } }),
   });
 
   const editor = useCreateBlockNote(

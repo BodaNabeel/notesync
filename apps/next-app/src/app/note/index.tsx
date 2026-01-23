@@ -1,5 +1,5 @@
-import { getSession } from "@/action/getSession";
 import { db } from "@/database/drizzle";
+import { getSession } from "@/utils/session.server";
 import { desc, documentTable, eq } from "@note/db";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";

@@ -99,6 +99,9 @@ importers:
       '@tanstack/react-start':
         specifier: ^1.154.0
         version: 1.154.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.3.1(@types/node@20.19.26)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
+      '@tanstack/zod-adapter':
+        specifier: ^1.154.13
+        version: 1.154.13(@tanstack/react-router@1.153.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(zod@4.3.5)
       better-auth:
         specifier: ^1.4.6
         version: 1.4.6(@tanstack/react-start@1.154.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vite@7.3.1(@types/node@20.19.26)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)))(next@16.0.1(@babel/core@7.28.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -1995,6 +1998,13 @@ packages:
   '@tanstack/virtual-file-routes@1.145.4':
     resolution: {integrity: sha512-CI75JrfqSluhdGwLssgVeQBaCphgfkMQpi8MCY3UJX1hoGzXa8kHYJcUuIFMOLs1q7zqHy++EVVtMK03osR5wQ==}
     engines: {node: '>=12'}
+
+  '@tanstack/zod-adapter@1.154.13':
+    resolution: {integrity: sha512-FlDY8+qEf4Cuyq7YuSi3uVYDYFmf3ZNsublRaNQq73S2ZIn4Lg/rxtDZWIEopHPTBA0x2/lIMn1TfVDrK3LZMA==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      '@tanstack/react-router': '>=1.43.2'
+      zod: ^3.23.8
 
   '@tiptap/core@3.13.0':
     resolution: {integrity: sha512-iUelgiTMgPVMpY5ZqASUpk8mC8HuR9FWKaDzK27w9oWip9tuB54Z8mePTxNcQaSPb6ErzEaC8x8egrRt7OsdGQ==}
@@ -6607,6 +6617,11 @@ snapshots:
   '@tanstack/store@0.8.0': {}
 
   '@tanstack/virtual-file-routes@1.145.4': {}
+
+  '@tanstack/zod-adapter@1.154.13(@tanstack/react-router@1.153.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(zod@4.3.5)':
+    dependencies:
+      '@tanstack/react-router': 1.153.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      zod: 4.3.5
 
   '@tiptap/core@3.13.0(@tiptap/pm@3.13.0)':
     dependencies:

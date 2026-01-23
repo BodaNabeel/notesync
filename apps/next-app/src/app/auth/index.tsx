@@ -1,15 +1,8 @@
 import SignUp from "@/components/SignUp";
-import { auth } from "@/lib/auth";
+import { getSession } from "@/utils/session.server";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
 import z from "zod";
 
-const getSession = createServerFn().handler(async () => {
-  const headers = getRequestHeaders();
-  const session = await auth.api.getSession({ headers });
-  return session;
-});
 const searchSchema = z.object({
   documentName: z.string().optional(),
 });

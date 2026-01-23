@@ -1,7 +1,8 @@
-import { getSession } from "@/action/getSession";
 import { authMiddleware } from "@/app/middleware/auth";
 import Editor from "@/components/editor/Editor";
+import ShareDocument from "@/components/editor/ShareDocument";
 import { db } from "@/database/drizzle";
+import { getSession } from "@/utils/session.server";
 import { documentTable, eq } from "@note/db";
 import { ClientOnly, createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
@@ -73,7 +74,7 @@ function RouteComponent() {
     <>
       <div className="flex items-center justify-between mx-8">
         <div>workspace / product / vision</div>
-        {/* {!isNew && documentDetail.ownerId === session.user.id ? (
+        {!isNew && documentDetail.ownerId === session.user.id ? (
           <ShareDocument
             documentDetail={documentDetail}
             userName={session.user.name}
@@ -82,7 +83,7 @@ function RouteComponent() {
           />
         ) : (
           <div className="h-8 w-8 border-2 opacity-0"> </div>
-        )} */}
+        )}
       </div>
 
       <ClientOnly fallback={<p>Running</p>}>

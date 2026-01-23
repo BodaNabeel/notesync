@@ -1,5 +1,3 @@
-"use client";
-import { deleteDocument, getDocuments } from "@/action/document-action";
 import { cn } from "@/lib/utils";
 import {
   InfiniteData,
@@ -12,6 +10,10 @@ import { Trash2 } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import SidebarListSkeleton from "./SidebarListSkeleton";
+import {
+  deleteDocument,
+  getDocuments,
+} from "@/utils/documents/document.server";
 
 const LIMIT_PER_PAGE = 30;
 function SidebarList() {
@@ -126,7 +128,7 @@ function SidebarList() {
       <>
         {data.pages.map((groups, index) => (
           <Fragment key={index}>
-            {groups.documents.map((data, i) => (
+            {groups.documents.map((data) => (
               <div
                 className={cn(
                   `text-nowrap relative px-1.5 py-1 rounded-md w-full transition-all hover:bg-accent/80`,
