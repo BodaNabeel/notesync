@@ -56,7 +56,6 @@ export default function Editor({
   const [provider, setProvider] = useState<HocuspocusProvider | null>(null);
 
   useEffect(() => {
-    console.log("trigger");
     if (!token) {
       return;
     }

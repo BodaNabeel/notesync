@@ -168,7 +168,6 @@ function SidebarList() {
                 </Link>
                 {hoveredId === data.documentId && (
                   <button
-                    // onClick={() => console.log(canGoBack)}
                     onClick={() => deleteThreadMutation.mutate(data.documentId)}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                   >
