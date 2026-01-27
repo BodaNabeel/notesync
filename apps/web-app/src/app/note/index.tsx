@@ -45,6 +45,7 @@ export const Route = createFileRoute("/note/")({
         params: {
           documentName: document.documentName,
         },
+        replace: true,
       });
     }
   },

@@ -5,7 +5,13 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Link, useMatch, useNavigate, useRouter } from "@tanstack/react-router";
+import {
+  Link,
+  useCanGoBack,
+  useMatch,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { Trash2 } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -29,6 +35,7 @@ function SidebarList() {
 
   const navigate = useNavigate();
   const router = useRouter();
+  const canGoBack = useCanGoBack();
   const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: ["document-list"],
@@ -44,12 +51,11 @@ function SidebarList() {
     mutationFn: (documentId: string) =>
       deleteDocument({ data: { documentId } }),
 
-    onMutate: async (documentId, context) => {
-      await context.client.cancelQueries({ queryKey: ["document-list"] });
-
+    onMutate: async (documentId) => {
+      await queryClient.cancelQueries({ queryKey: ["document-list"] });
       const previousList = queryClient.getQueryData(["document-list"]);
 
-      context.client.setQueryData(
+      queryClient.setQueryData(
         ["document-list"],
         (
           old: InfiniteData<{
@@ -68,10 +74,45 @@ function SidebarList() {
               documents: page.documents.filter(
                 (document) => document.documentId !== documentId,
               ),
+              total: page.total - 1,
             })),
           };
         },
       );
+
+      const isCurrentDocument = documentId === documentName;
+
+      // Only navigate if we're deleting the currently open document
+      if (!isCurrentDocument) {
+        return { previousList };
+      }
+
+      // Get updated list after deletion
+      const updatedData = queryClient.getQueryData(["document-list"]) as
+        | InfiniteData<{
+            documents: { title: string; documentId: string }[];
+            total: number;
+            nextCursor: number | null;
+          }>
+        | undefined;
+
+      const remainingDocuments = updatedData?.pages[0].documents;
+      // Navigate based on what's left
+      if (remainingDocuments && remainingDocuments.length > 0) {
+        const nextDocument = remainingDocuments[0];
+        navigate({
+          to: "/note/$documentName",
+          params: {
+            documentName: nextDocument.documentId,
+          },
+          replace: true,
+        });
+      } else {
+        navigate({
+          to: "/note",
+          replace: true,
+        });
+      }
 
       return { previousList };
     },
@@ -94,34 +135,6 @@ function SidebarList() {
     }
   }, [inView, hasNextPage, fetchNextPage]);
 
-  const handleDelete = (documentId: string) => {
-    deleteThreadMutation.mutate(documentId);
-
-    if (documentName === documentId) {
-      if (window.history.length > 2) {
-        router.history.back();
-      } else {
-        const isFirstItem =
-          data?.pages[0].documents[0].documentId === documentId;
-        if (isFirstItem) {
-          navigate({
-            to: "/note/$documentName",
-            params: {
-              documentName: data?.pages[0].documents[1].documentId,
-            },
-          });
-        } else {
-          navigate({
-            to: "/note/$documentName",
-            params: {
-              documentName: data?.pages[0]?.documents[0]?.documentId ?? "",
-            },
-          });
-        }
-        // TODO: Add a fallback id guard so when user deletes all note, user doesn't get a 404
-      }
-    }
-  };
   if (isLoading) return <SidebarListSkeleton count={12} />;
   if (data) {
     return (
@@ -155,7 +168,8 @@ function SidebarList() {
                 </Link>
                 {hoveredId === data.documentId && (
                   <button
-                    onClick={() => handleDelete(data.documentId)}
+                    // onClick={() => console.log(canGoBack)}
+                    onClick={() => deleteThreadMutation.mutate(data.documentId)}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                   >
                     <Trash2 size={16} />
