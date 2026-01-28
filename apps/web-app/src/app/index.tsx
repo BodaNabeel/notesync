@@ -1,9 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import Landing from "@/components/landing/Landing";
+import { getSession } from "@/utils/session.server";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: Home,
+  component: Landing,
+  beforeLoad: async () => {
+    const session = await getSession();
+    if (session) {
+      throw redirect({
+        to: "/note",
+      });
+    }
+  },
 });
-
-function Home() {
-  return <h1>Hello there!</h1>;
-}
