@@ -1,5 +1,4 @@
 // import { Geist, Geist_Mono } from "next/font/google";
-import { AuthProvider } from "@/hooks/use-auth";
 import {
   createRootRoute,
   HeadContent,
@@ -37,10 +36,8 @@ function RootLayout() {
           <HeadContent />
         </head>
         <body>
-          <AuthProvider>
-            <Outlet />
-            <Scripts />
-          </AuthProvider>
+          <Outlet />
+          <Scripts />
         </body>
       </html>
     </html>

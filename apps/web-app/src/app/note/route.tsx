@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AuthProvider } from "@/hooks/use-auth";
 import QueryClientWrapper from "@/Provider/tanstack-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
@@ -14,7 +15,9 @@ function RouteComponent() {
         <AppSidebar />
         <main className="w-full ">
           <SidebarTrigger />
-          <Outlet />
+          <AuthProvider>
+            <Outlet />
+          </AuthProvider>
         </main>
       </SidebarProvider>
     </QueryClientWrapper>
