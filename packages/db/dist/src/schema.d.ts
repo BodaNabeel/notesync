@@ -265,6 +265,49 @@ export declare const documentTable: import("drizzle-orm/pg-core").PgTableWithCol
     };
     dialect: "pg";
 }>;
+export declare const publicDocumentTable: import("drizzle-orm/pg-core").PgTableWithColumns<{
+    name: "public_document";
+    schema: undefined;
+    columns: {
+        document_id: import("drizzle-orm/pg-core").PgColumn<{
+            name: "document_id";
+            tableName: "public_document";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: true;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        document: import("drizzle-orm/pg-core").PgColumn<{
+            name: "document";
+            tableName: "public_document";
+            dataType: "custom";
+            columnType: "PgCustomColumn";
+            data: Uint8Array<ArrayBufferLike>;
+            driverParam: Buffer<ArrayBufferLike>;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            pgColumnBuilderBrand: "PgCustomColumnBuilderBrand";
+        }>;
+    };
+    dialect: "pg";
+}>;
 export declare const user: import("drizzle-orm/pg-core").PgTableWithColumns<{
     name: "user";
     schema: undefined;

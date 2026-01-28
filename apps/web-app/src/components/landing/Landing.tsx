@@ -1,6 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Share2, Users, Zap, Lock, BookOpen } from "lucide-react";
+import { ClientOnly, useNavigate } from "@tanstack/react-router";
+import {
+  ArrowRight,
+  BookOpen,
+  LoaderCircle,
+  Lock,
+  Share2,
+  Users,
+  Zap,
+} from "lucide-react";
+import EditorDemo from "./EditorDemo";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -78,21 +87,21 @@ export default function Landing() {
           </div>
 
           {/* Hero Visual */}
-          <div className="mt-16 md:mt-24 relative">
-            <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-primary/10 rounded-2xl blur-3xl -z-10"></div>
-            <div className="bg-card border border-border rounded-2xl p-8 md:p-12 shadow-lg">
-              <div className="space-y-4">
-                <div className="h-12 bg-muted rounded-lg"></div>
-                <div className="space-y-3">
-                  <div className="h-4 bg-muted rounded-lg w-full"></div>
-                  <div className="h-4 bg-muted rounded-lg w-5/6"></div>
-                  <div className="grid grid-cols-3 gap-3 mt-6">
-                    <div className="h-20 bg-primary/10 rounded-lg border border-primary/20"></div>
-                    <div className="h-20 bg-primary/10 rounded-lg border border-primary/20"></div>
-                    <div className="h-20 bg-primary/10 rounded-lg border border-primary/20"></div>
+          <div className="mt-16 md:mt-24 relative space-y-8">
+            <h1 className="text-center text-5xl text-primary font-semibold font-mono">
+              Checkout Editor Here
+            </h1>
+
+            <div className=" h-96 overflow-auto bg-card border border-border rounded-2xl p-8 md:p-12 shadow-lg">
+              <ClientOnly
+                fallback={
+                  <div className="w-full h-full flex items-center justify-center">
+                    <LoaderCircle className="animate-spin" />
                   </div>
-                </div>
-              </div>
+                }
+              >
+                <EditorDemo />
+              </ClientOnly>
             </div>
           </div>
         </div>
@@ -151,48 +160,6 @@ export default function Landing() {
               <p className="text-foreground/70">
                 Share with granular permissions. Grant view-only or editor
                 access. Control who can see what.
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="bg-card border border-border rounded-xl p-8 hover:border-primary/50 transition-colors">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-lg text-foreground mb-2">
-                Team Workspace
-              </h3>
-              <p className="text-foreground/70">
-                Organize notes into workspaces. Invite team members and
-                collaborate across projects effortlessly.
-              </p>
-            </div>
-
-            {/* Feature 5 */}
-            <div className="bg-card border border-border rounded-xl p-8 hover:border-primary/50 transition-colors">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <Lock className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-lg text-foreground mb-2">
-                Secure & Private
-              </h3>
-              <p className="text-foreground/70">
-                Enterprise-grade encryption. Your data is yours. GDPR compliant
-                and SOC 2 certified.
-              </p>
-            </div>
-
-            {/* Feature 6 */}
-            <div className="bg-card border border-border rounded-xl p-8 hover:border-primary/50 transition-colors">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <ArrowRight className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-lg text-foreground mb-2">
-                Rich Integrations
-              </h3>
-              <p className="text-foreground/70">
-                Connect with Slack, GitHub, Zapier and more. Automate your
-                workflow with powerful integrations.
               </p>
             </div>
           </div>

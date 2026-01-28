@@ -40,6 +40,10 @@ export const documentTable = pgTable("document_table", {
     ownerId: text("owner_id").references(() => user.id, { onDelete: 'cascade' }).notNull()
 });
 
+export const publicDocumentTable = pgTable("public_document", {
+    document_id: text("document_id").primaryKey().notNull(),
+    document: bytea("document")
+})
 
 export const user = pgTable("user", {
     id: text("id").primaryKey(),

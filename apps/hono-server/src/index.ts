@@ -2,7 +2,7 @@ import { Database } from "@hocuspocus/extension-database";
 import { Hocuspocus } from "@hocuspocus/server";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
-import { and, documentTable, eq, or } from "@note/db";
+import { documentTable, eq, publicDocumentTable } from "@note/db";
 import { Hono } from "hono";
 import * as Y from "yjs";
 import { db } from "./db.ts";
@@ -21,12 +21,21 @@ const hocuspocus = new Hocuspocus({
     })
   ],
 
-  onStoreDocument: async ({ documentName, document }) => {
+  onStoreDocument: async ({ documentName, document, requestParameters }) => {
 
     const update = Y.encodeStateAsUpdate(document);
     const meta = document.getMap("meta");
     const title = meta.get("title") ?? null
 
+    const isPublicDocument = requestParameters.get("public")
+
+
+    if (isPublicDocument) {
+      return await db.update(publicDocumentTable).set({
+        document: update
+      })
+
+    }
     try {
       await db
         .update(documentTable).set({
@@ -38,8 +47,25 @@ const hocuspocus = new Hocuspocus({
 
   },
   async onAuthenticate({ documentName, token, requestParameters, connectionConfig, context }) {
-    if (!token) {
+    const isPublicDocument = requestParameters.get("public")
+    if (!token && !isPublicDocument) {
       throw new Error("Token is required to proceed further.");
+    }
+    if (isPublicDocument) {
+      try {
+        const publicDocumentID = "public_document"
+        const [publicDoc] = await db
+          .select()
+          .from(publicDocumentTable)
+          .where(eq(publicDocumentTable.document_id, publicDocumentID))
+        return {
+          document: publicDoc.document
+        };
+
+      } catch (e) {
+        console.log("[ERROR]: Failed to fetch document due to: ", e)
+        return null
+      }
     }
     const payload = await validateToken(token);
     const userId = payload.id as string
@@ -62,7 +88,6 @@ const hocuspocus = new Hocuspocus({
       .limit(1);
 
     if (createDocument === "true") {
-      console.log(createDocument)
       if (existingDoc) {
         throw new Error("Access denied. Document already exists.");
       } else {
