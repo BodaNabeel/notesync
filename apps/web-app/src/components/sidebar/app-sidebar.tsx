@@ -17,7 +17,7 @@ export function AppSidebar() {
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold">
             N
           </div>
-          <span className="font-serif text-xl font-bold text-foreground">
+          <span className="font-serif text-xl text-foreground font-bold ">
             NoteSync
           </span>
         </div>
