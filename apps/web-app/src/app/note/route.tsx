@@ -14,7 +14,7 @@ function RouteComponent() {
       <SidebarProvider>
         <AppSidebar />
         <main className="w-full ">
-          <SidebarTrigger />
+          <SidebarTrigger className="absolute" />
           <AuthProvider>
             <Outlet />
           </AuthProvider>

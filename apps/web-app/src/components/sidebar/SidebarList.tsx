@@ -20,6 +20,7 @@ import {
   deleteDocument,
   getDocuments,
 } from "@/utils/documents/document.server";
+import { useSidebar } from "../ui/sidebar";
 
 const LIMIT_PER_PAGE = 30;
 function SidebarList() {
@@ -32,10 +33,8 @@ function SidebarList() {
   const documentName = documentMatch?.params.documentName;
 
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-
+  const { setOpenMobile } = useSidebar();
   const navigate = useNavigate();
-  const router = useRouter();
-  const canGoBack = useCanGoBack();
   const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: ["document-list"],
@@ -152,6 +151,7 @@ function SidebarList() {
                 onMouseLeave={() => setHoveredId(null)}
               >
                 <Link
+                  onClick={() => setOpenMobile(false)}
                   preload="intent"
                   className={cn(
                     "block truncate",

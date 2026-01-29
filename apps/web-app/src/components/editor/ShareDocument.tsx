@@ -72,7 +72,7 @@ export default function ShareDocument({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="bg-primary-foreground space-y-5">
+      <DialogContent className="bg-primary-foreground md:space-y-5">
         <DialogHeader>
           <DialogTitle className="text-2xl">Link share settings</DialogTitle>
         </DialogHeader>
@@ -80,7 +80,7 @@ export default function ShareDocument({
         {/* Owner Card */}
         <div className="flex justify-between items-center border bg-accent/30 rounded-lg p-4 gap-4">
           <div className="flex gap-4 items-center">
-            <span className="bg-accent/60 p-4 rounded-full">
+            <span className="hidden md:block bg-accent/60 p-4 rounded-full">
               <ShieldCheck size={26} />
             </span>
             <div>
@@ -92,7 +92,7 @@ export default function ShareDocument({
         </div>
 
         {/* Access Selector */}
-        <div className="flex items-center justify-between gap-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between md:gap-6 gap-4">
           <div>
             <h2 className="font-semibold text-lg">Anyone with the link</h2>
             <p className="text-sm text-muted-foreground">
@@ -119,7 +119,7 @@ export default function ShareDocument({
               });
             }}
           >
-            <SelectTrigger className="border border-primary  py-4">
+            <SelectTrigger className="border border-primary  w-full py-4">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -208,7 +208,7 @@ export default function ShareDocument({
 
         <Separator />
 
-        <DialogDescription className="bg-accent/20 text-sm p-4 rounded-lg border">
+        <DialogDescription className="bg-accent/20 text-xs md:text-sm p-4 rounded-lg border">
           Generating a link allows anyone with the URL to access this document
           based on the selected permission. You can change or revoke access at
           any time.

@@ -64,8 +64,7 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="flex items-center justify-between mx-8">
-        <div>workspace / product / vision</div>
+      <div className="flex items-center justify-end mr-4">
         {!isNew && documentDetail?.ownerId === session.user.id ? (
           <ShareDocument
             documentDetail={documentDetail}
