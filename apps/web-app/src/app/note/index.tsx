@@ -26,6 +26,16 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/note/")({
   validateSearch: searchSchema,
   component: RouteComponent,
+  head: () => ({
+    meta: [
+      { title: "NoteSync - Welcome" },
+      {
+        name: "description",
+        content:
+          "A collaborative platform to write down notes, share with the world and broadcast updates in realtime.",
+      },
+    ],
+  }),
   beforeLoad: async () => {
     const session = await getSession();
     if (!session) {

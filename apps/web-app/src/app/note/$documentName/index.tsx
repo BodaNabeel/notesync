@@ -21,6 +21,7 @@ const getCurrentDocument = createServerFn()
         documentAccessType: documentTable.documentAccessType,
         documentEditMode: documentTable.documentEditMode,
         ownerId: documentTable.ownerId,
+        title: documentTable.title,
       })
       .from(documentTable)
       .where(eq(documentTable.id, data.documentName))
@@ -50,6 +51,11 @@ export const Route = createFileRoute("/note/$documentName/")({
       throw notFound();
     }
   },
+  head: ({ loaderData }) => ({
+    meta: [
+      { title: loaderData?.documentDetail.title ?? "NoteSync - Untitled" },
+    ],
+  }),
   pendingComponent: () => (
     <div className="mt-20">
       <EditorSkeleton />,
