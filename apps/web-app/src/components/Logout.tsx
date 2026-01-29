@@ -24,7 +24,7 @@ export default function Logout() {
       {triggerLogout ? (
         <>
           <LoaderCircle className="animate-spin" />
-          <p>Logging out...</p>
+          <p>Logging out....</p>
         </>
       ) : (
         "Logout"
