@@ -1,0 +1,27 @@
+# railway.toml
+
+# Web App (Tanstack Start)
+[[services]]
+name = "web-app"
+source = "apps/web-app"
+
+[services.build]
+builder = "NIXPACKS"
+buildCommand = "pnpm install --frozen-lockfile && pnpm --filter web-app build"
+
+[services.deploy]
+startCommand = "pnpm --filter web-app start"
+restartPolicyType = "ON_FAILURE"
+
+# Hono Server
+[[services]]
+name = "hono-server"
+source = "apps/hono-server"
+
+[services.build]
+builder = "NIXPACKS"
+buildCommand = "pnpm install --frozen-lockfile && pnpm --filter hono-server build"
+
+[services.deploy]
+startCommand = "pnpm --filter hono-server dev"
+restartPolicyType = "ON_FAILURE"
