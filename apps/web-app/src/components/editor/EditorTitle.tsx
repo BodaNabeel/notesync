@@ -83,7 +83,7 @@ export default function EditorTitle({
   }, [title]);
 
   return (
-    <div className="max-w-5xl mx-auto  px-10 mt-10">
+    <div className="max-w-5xl mx-auto px-10 mt-2 md:mt-10">
       <textarea
         disabled={!editable}
         ref={textareaRef}
@@ -91,7 +91,7 @@ export default function EditorTitle({
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Untitled page"
         rows={1}
-        className="text-5xl  w-full font-bold outline-none placeholder:text-gray-400  resize-none overflow-hidden"
+        className="text-3xl md:text-5xl w-full font-bold outline-none placeholder:text-gray-400  resize-none overflow-hidden"
       />
     </div>
   );
