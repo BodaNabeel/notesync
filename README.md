@@ -115,7 +115,7 @@ pnpm install
 
 ## 🔐 Environment Variables
 
-Both applications require **separate \`.env\` files**.
+Both applications require **separate `.env` files**.
 
 - `apps/web-app/.env`
 - `apps/hono-server/.env`
@@ -166,16 +166,4 @@ Run from `apps/hono-server`:
 pnpm build
 pnpm start
 ```
-
----
-
-## 📄 License
-
-MIT License
-
----
-
-## 👤 Maintainer
-
-Maintained by **Nabeel Boda**
 
