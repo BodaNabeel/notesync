@@ -8,8 +8,6 @@
     "db:push": "pnpm --filter @note/db exec drizzle-kit push",
     "dev:hono": "pnpm --filter hono-server dev",
     "dev:app": "pnpm --filter web-app dev",
-    "build": "pnpm --filter web-app build",
-    "start": "pnpm --filter web-app start",
     "lint": "eslint"
   },
   "devDependencies": {
