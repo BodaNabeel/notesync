@@ -91,7 +91,7 @@ export default function ShareDocument({
           <Badge>Owner</Badge>
         </div>
 
-        {/* Access Selector */}
+        {/* Access Selector*/}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between md:gap-6 gap-4">
           <div>
             <h2 className="font-semibold text-lg">Anyone with the link</h2>
