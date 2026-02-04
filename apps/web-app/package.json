@@ -10,7 +10,7 @@
     "start": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "nitro": "npm:nitro-nightly@latest",
+    "nitro": "pnpm:nitro-nightly@latest",
     "@blocknote/core": "^0.44.0",
     "@blocknote/react": "^0.44.0",
     "@blocknote/shadcn": "^0.44.0",
