@@ -186,6 +186,7 @@ export default function Editor({
         className="max-w-5xl mx-auto min-h-[calc(100vh-200px)] pb-80 mt-8"
       >
         <BlockNoteView
+          theme="light"
           editable={editable}
           editor={editor}
           shadCNComponents={{ DropdownMenu }}

@@ -57,7 +57,7 @@ function EditorDemo() {
         <LoaderCircle className="animate-spin" />
       </div>
     );
-  return <BlockNoteView className="bg-white!" editor={editor} />;
+  return <BlockNoteView className="bg-white!" theme="light" editor={editor} />;
 }
 
 export default EditorDemo;
