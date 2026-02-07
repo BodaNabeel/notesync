@@ -6,6 +6,18 @@ The project is fully authenticated, supports multiple access modes, and is built
 
 ---
 
+
+## 💻 DEMO
+<div>
+    <a href="https://www.loom.com/share/4c3e245075664bb9bce10d5942fb7c51">
+      <p>Showcasing NoteSync: A Real-Time Collaborative Note-Taking Tool - Watch Video</p>
+    </a>
+    <a href="https://www.loom.com/share/4c3e245075664bb9bce10d5942fb7c51">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/4c3e245075664bb9bce10d5942fb7c51-62d553b25600ea9d-full-play.gif#t=0.1">
+    </a>
+  </div>
+
+
 ## ✨ Features
 
 - 🧱 **Block-based Editor** - Notion-like editing experience with BlockNote
